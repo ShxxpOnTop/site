@@ -114,4 +114,45 @@
         <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/95 dark:bg-[#0a0510]/95 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
             <div class="flex gap-4 font-medium flex-1"><span>© 2026 ALEX</span></div>
             <div class="absolute-center italic tracking-[0.5em] font-light text-gray-500 dark:text-purple-400/80 text-[12px]">a / k</div>
-            <div class="flex-1 text-right
+            <div class="flex-1 text-right"><span id="local-time" class="font-mono text-[11px] dark:text-purple-300/80">--:--:--</span></div>
+        </footer>
+    </div>
+
+    <script>
+        function updateThemeIcon() {
+            const themeIcon = document.getElementById('theme-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                themeIcon.innerHTML = '&#9790;'; // Icône de lune
+            } else {
+                themeIcon.innerHTML = '&#9728;'; // Icône de soleil
+            }
+        }
+        updateThemeIcon(); // Appel initial pour afficher la bonne icône
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('transition-layer').style.opacity = "0";
+                document.getElementById('main-wrapper').classList.add('visible');
+            }, 50);
+        };
+
+        function updateClock() { 
+            document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); 
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        function toggleDarkMode() {
+            const isDark = document.getElementById('html-tag').classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(); // Met à jour l'icône après le changement de thème
+        }
+
+        function logout() {
+            document.getElementById('transition-layer').style.opacity = "1";
+            document.getElementById('main-wrapper').style.opacity = "0";
+            localStorage.removeItem('access_granted');
+            setTimeout(() => { window.location.replace("index.html"); }, 400);
+        }
+    </script>
+</body>
+</html>
