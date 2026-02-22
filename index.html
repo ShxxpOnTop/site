@@ -7,21 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script>
-        // Fonction pour gérer le thème au chargement
+        // Gestion immédiate du thème
         function applyTheme() {
             const currentTheme = localStorage.getItem('theme');
-            if (currentTheme === 'light') {
-                document.documentElement.classList.remove('dark');
-            } else {
-                document.documentElement.classList.add('dark');
-            }
+            if (currentTheme === 'light') { document.documentElement.classList.remove('dark'); }
+            else { document.documentElement.classList.add('dark'); }
         }
         applyTheme();
 
-        // Redirection si l'accès est déjà accordé
-        if (localStorage.getItem('access_granted') === 'true') {
-            window.location.replace("home.html");
-        }
+        // Redirection auto si déjà connecté
+        if (localStorage.getItem('access_granted') === 'true') { window.location.replace("home.html"); }
+        
         tailwind.config = { darkMode: 'class' }
     </script>
     <style>
@@ -29,6 +25,15 @@
         body { font-family: 'Inter', sans-serif; overflow: hidden; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
         
+        /* Animation de rotation de l'icône */
+        .theme-rotate {
+            animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes rotate-icon {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
+            100% { transform: rotate(180deg) scale(1); opacity: 1; }
+        }
+
         #transition-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 9999;
@@ -47,8 +52,8 @@
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
 
     <nav class="fixed top-0 right-0 p-8">
-        <button onclick="toggleDarkMode()" class="text-xl leading-none text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300">
-            <span id="theme-icon"></span>
+        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl leading-none text-gray-500 dark:text-purple-300/60 hover:text-black dark:hover:text-purple-300 transition-all active:scale-90 outline-none">
+            <span id="theme-icon" class="block pointer-events-none"></span>
         </button>
     </nav>
 
@@ -56,7 +61,7 @@
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm">
+                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400 dark:placeholder:text-purple-900/30">
             <button onclick="checkAccess()" 
                 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer">
                 Entrer
@@ -66,17 +71,18 @@
     </div>
 
     <script>
-        function updateThemeIcon() {
+        function updateThemeIcon(animate = false) {
             const themeIcon = document.getElementById('theme-icon');
-            if (document.documentElement.classList.contains('dark')) {
-                themeIcon.innerHTML = '&#9790;'; // Icône de lune
-            } else {
-                themeIcon.innerHTML = '&#9728;'; // Icône de soleil
+            if (animate) {
+                themeIcon.classList.remove('theme-rotate');
+                void themeIcon.offsetWidth; 
+                themeIcon.classList.add('theme-rotate');
             }
+            themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
         }
-        updateThemeIcon(); // Appel initial pour afficher la bonne icône
 
         window.onload = () => {
+            updateThemeIcon(false);
             setTimeout(() => {
                 document.getElementById('transition-layer').style.opacity = "0";
                 document.getElementById('main-content').classList.add('visible');
@@ -84,7 +90,8 @@
         };
 
         async function checkAccess() {
-            if(document.getElementById('password').value === '1234') {
+            const pass = document.getElementById('password').value;
+            if(pass === '1234') {
                 document.getElementById('transition-layer').style.opacity = "1";
                 document.getElementById('main-content').style.opacity = "0";
                 localStorage.setItem('access_granted', 'true');
@@ -95,12 +102,16 @@
                 setTimeout(() => err.classList.add('hidden'), 2000);
             }
         }
+
         function toggleDarkMode() {
-            const isDark = document.getElementById('html-tag').classList.toggle('dark');
+            const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateThemeIcon(); // Met à jour l'icône après le changement de thème
+            updateThemeIcon(true);
         }
-        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
+
+        document.getElementById('password').addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') checkAccess(); 
+        });
     </script>
 </body>
 </html>
