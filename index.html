@@ -18,14 +18,15 @@
     </script>
     <style>
         * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important; }
-        body { font-family: 'Inter', sans-serif; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
         
-        /* Rotation complète 360 pour finir dans le bon sens */
-        .theme-rotate { animation: rotate-icon 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        @keyframes rotate-icon {
-            0% { transform: rotate(0deg); opacity: 0.5; }
-            100% { transform: rotate(360deg); opacity: 1; }
+        .theme-rotate { animation: switch-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes switch-icon {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            50% { transform: rotate(90deg) scale(0.5); opacity: 0; }
+            51% { transform: rotate(-90deg) scale(0.5); opacity: 0; }
+            100% { transform: rotate(0deg) scale(1); opacity: 1; }
         }
 
         #transition-layer {
@@ -40,7 +41,7 @@
         }
         .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     </style>
- head>
+</head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
 
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
@@ -55,9 +56,9 @@
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm">
+                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400/50 dark:placeholder:text-purple-300/20">
             <button onclick="checkAccess()" 
-                class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer">
+                class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer block mx-auto">
                 Entrer
             </button>
         </div>
@@ -71,10 +72,9 @@
                 themeIcon.classList.remove('theme-rotate');
                 void themeIcon.offsetWidth; 
                 themeIcon.classList.add('theme-rotate');
-                // Switch à mi-parcours (0.25s sur 0.5s)
                 setTimeout(() => {
                     themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
-                }, 250);
+                }, 200);
             } else {
                 themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
             }
