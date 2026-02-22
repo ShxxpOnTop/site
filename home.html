@@ -6,14 +6,8 @@
     <title>Alex | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
-        if (localStorage.getItem('access_granted') !== 'true') {
-            window.location.replace("index.html");
-        }
+        if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); }
+        if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
         tailwind.config = { darkMode: 'class' }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -25,9 +19,18 @@
         main { padding-bottom: 120px; }
         .violet-glow { text-shadow: 0 0 12px rgba(168, 85, 247, 0.4); }
         .absolute-center { position: absolute; left: 50%; transform: translateX(-50%); }
+
+        #transition-layer {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999;
+            transition: opacity 0.6s ease-in-out !important;
+            opacity: 1; /* Commence opaque */
+        }
     </style>
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
+
+    <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
 
     <nav class="flex justify-between items-center px-6 py-8 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
         <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
@@ -53,9 +56,7 @@
     </main>
 
     <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/90 dark:bg-[#0a0510]/90 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
-        <div class="flex gap-4 font-medium flex-1">
-            <span>© 2026 ALEX</span>
-        </div>
+        <div class="flex gap-4 font-medium flex-1"><span>© 2026 ALEX</span></div>
         <div class="absolute-center italic tracking-[0.5em] font-light text-gray-500 dark:text-purple-400/80 text-[12px]">a/k</div>
         <div class="flex-1 text-right">
             <span id="local-time" class="font-mono tabular-nums tracking-tighter text-[11px] dark:text-purple-300/80">--:--:--</span>
@@ -63,11 +64,11 @@
     </footer>
 
     <script>
-        function updateClock() {
-            document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        // Au chargement, on retire le voile
+        window.onload = () => { setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 100); };
+
+        function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
+        setInterval(updateClock, 1000); updateClock();
 
         function toggleDarkMode() {
             const isDark = document.getElementById('html-tag').classList.toggle('dark');
@@ -76,8 +77,9 @@
         }
 
         function logout() {
+            document.getElementById('transition-layer').style.opacity = "1";
             localStorage.removeItem('access_granted');
-            window.location.replace("index.html");
+            setTimeout(() => { window.location.replace("index.html"); }, 500);
         }
         document.getElementById('mode-text').textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
     </script>
