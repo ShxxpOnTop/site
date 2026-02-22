@@ -7,17 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script>
-        // Gestion immédiate du thème
         function applyTheme() {
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') { document.documentElement.classList.remove('dark'); }
             else { document.documentElement.classList.add('dark'); }
         }
         applyTheme();
-
-        // Redirection auto si déjà connecté
         if (localStorage.getItem('access_granted') === 'true') { window.location.replace("home.html"); }
-        
         tailwind.config = { darkMode: 'class' }
     </script>
     <style>
@@ -25,13 +21,10 @@
         body { font-family: 'Inter', sans-serif; overflow: hidden; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
         
-        /* Animation de rotation de l'icône */
-        .theme-rotate {
-            animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .theme-rotate { animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes rotate-icon {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-            100% { transform: rotate(180deg) scale(1); opacity: 1; }
+            0% { transform: rotate(0deg); opacity: 0.5; }
+            100% { transform: rotate(180deg); opacity: 1; }
         }
 
         #transition-layer {
@@ -61,7 +54,7 @@
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400 dark:placeholder:text-purple-900/30">
+                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm">
             <button onclick="checkAccess()" 
                 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer">
                 Entrer
@@ -77,8 +70,12 @@
                 themeIcon.classList.remove('theme-rotate');
                 void themeIcon.offsetWidth; 
                 themeIcon.classList.add('theme-rotate');
+                setTimeout(() => {
+                    themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
+                }, 200);
+            } else {
+                themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
             }
-            themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
         }
 
         window.onload = () => {
@@ -90,8 +87,7 @@
         };
 
         async function checkAccess() {
-            const pass = document.getElementById('password').value;
-            if(pass === '1234') {
+            if(document.getElementById('password').value === '1234') {
                 document.getElementById('transition-layer').style.opacity = "1";
                 document.getElementById('main-content').style.opacity = "0";
                 localStorage.setItem('access_granted', 'true');
@@ -109,9 +105,7 @@
             updateThemeIcon(true);
         }
 
-        document.getElementById('password').addEventListener('keypress', (e) => { 
-            if (e.key === 'Enter') checkAccess(); 
-        });
+        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
     </script>
 </body>
 </html>
