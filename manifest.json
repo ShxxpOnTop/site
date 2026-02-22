@@ -1,0 +1,16 @@
+{
+  "name": "Alex Vault",
+  "short_name": "Alex",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a0510",
+  "theme_color": "#0a0510",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
