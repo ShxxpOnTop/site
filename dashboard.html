@@ -7,9 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // --- SÉCURITÉ & THÈME ---
         if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
-        
         function applyTheme() {
             const theme = localStorage.getItem('theme') || 'dark';
             document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -17,7 +15,6 @@
         applyTheme();
         tailwind.config = { darkMode: 'class' }
 
-        // --- WAKE LOCK ---
         let wakeLock = null;
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {}
@@ -30,24 +27,19 @@
         * { transition: background-color 0.4s ease, color 0.4s ease; -webkit-font-smoothing: antialiased; }
         body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; min-height: 100vh; margin: 0; background: #f6f6f6; }
         .dark body { background: #0a0510; }
-        
         .stat-card { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); padding: 1.5rem; border-radius: 4px; }
         .dark .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); }
-        
         .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
         .stealth-control:hover { opacity: 1; color: #8b5cf6; }
-        
         .notification {
             background: rgba(10, 5, 16, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(139, 92, 246, 0.3);
             color: white; padding: 12px 24px; border-radius: 4px; font-size: 10px; text-transform: uppercase;
             letter-spacing: 0.2em; opacity: 0; transform: translateY(20px); transition: all 0.4s ease;
         }
         .notification.show { opacity: 1; transform: translateY(0); }
-
         #bulk-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: #f6f6f6; padding: 2rem; border-radius: 8px; width: 90%; max-width: 320px; }
         .dark .modal-content { background: #0a0510; border: 1px solid #8b5cf6; }
-
         #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 1; background: inherit; transition: opacity 0.5s ease; }
     </style>
 </head>
@@ -57,12 +49,12 @@
     
     <div id="bulk-modal">
         <div class="modal-content text-center">
-            <h2 class="text-[10px] uppercase tracking-widest mb-4">Bulk Orders</h2>
-            <p class="text-[10px] opacity-50 mb-2">NOMBRE DE NOTIFICATIONS</p>
-            <input type="number" id="bulk-count" value="5" class="w-full bg-transparent border-b border-purple-500 text-center text-2xl mb-6 outline-none font-light">
+            <h2 class="text-[10px] uppercase tracking-widest mb-4">Explosion de ventes</h2>
+            <p class="text-[10px] opacity-50 mb-2">NOMBRE DE NOTIFS (ALEATOIRE)</p>
+            <input type="number" id="bulk-count" value="10" class="w-full bg-transparent border-b border-purple-500 text-center text-2xl mb-6 outline-none font-light">
             <div class="flex gap-4">
-                <button onclick="closeModal()" class="flex-1 text-[9px] uppercase tracking-widest opacity-50">Annuler</button>
-                <button onclick="startBulk()" class="flex-1 text-[9px] uppercase tracking-widest text-purple-500 font-bold">Lancer la vague</button>
+                <button onclick="closeModal()" class="flex-1 text-[9px] uppercase tracking-widest opacity-50">Fermer</button>
+                <button onclick="startBulk()" class="flex-1 text-[9px] uppercase tracking-widest text-purple-500 font-bold">Lancer l'orage</button>
             </div>
         </div>
     </div>
@@ -72,7 +64,7 @@
             <div class="flex items-center gap-4">
                 <div class="font-serif text-3xl font-normal dark:text-purple-400">Alex.</div>
                 <div class="flex gap-4 text-[10px] uppercase tracking-widest font-medium ml-4">
-                    <a href="home.html" class="text-gray-400 hover:text-black dark:hover:text-white transition-colors">Index</a>
+                    <a href="home.html" class="text-gray-400 hover:text-black dark:hover:text-white">Index</a>
                     <a href="#" class="text-black dark:text-white border-b border-black dark:border-purple-500">Dashboard</a>
                 </div>
             </div>
@@ -98,7 +90,6 @@
                     <div class="text-4xl font-light tracking-tighter dark:text-white text-black"><span id="profit-val">0</span>€</div>
                 </div>
             </div>
-            
             <div id="transaction-list" class="space-y-4 border-t border-gray-200 dark:border-purple-900/10 pt-4"></div>
         </main>
 
@@ -111,11 +102,7 @@
     <div id="notification-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <script>
-        // --- LOGIQUE DATA ---
-        let data = { 
-            balance: parseInt(localStorage.getItem('alex_balance')) || 12540, 
-            profit: parseInt(localStorage.getItem('alex_profit')) || 3200 
-        };
+        let data = { balance: parseInt(localStorage.getItem('alex_balance')) || 12540, profit: parseInt(localStorage.getItem('alex_profit')) || 3200 };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
 
         function updateDisplay() {
@@ -129,19 +116,25 @@
             });
         }
 
-        // --- GESTION MODAL BULK ---
         function openModal() { document.getElementById('bulk-modal').style.display = 'flex'; }
         function closeModal() { document.getElementById('bulk-modal').style.display = 'none'; }
         
+        // --- LOGIQUE BULK ALEATOIRE ET RAPIDE ---
         function startBulk() {
             const count = parseInt(document.getElementById('bulk-count').value);
             closeModal();
             let i = 0;
-            const interval = setInterval(() => {
-                updateValue('profit', 97);
-                i++;
-                if (i >= count) clearInterval(interval);
-            }, 1200);
+            
+            function sendNext() {
+                if (i < count) {
+                    updateValue('profit', 97);
+                    i++;
+                    // Délai aléatoire entre 200ms et 1000ms
+                    let randomDelay = Math.floor(Math.random() * (1000 - 200 + 1)) + 200;
+                    setTimeout(sendNext, randomDelay);
+                }
+            }
+            sendNext();
         }
 
         function updateValue(type, amount) {
@@ -149,25 +142,20 @@
             const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
             transactions.unshift({ time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), label: labelText, amount: amount });
             if(transactions.length > 15) transactions.pop();
-            
-            localStorage.setItem('alex_balance', data.balance); 
-            localStorage.setItem('alex_profit', data.profit); 
-            localStorage.setItem('alex_transactions', JSON.stringify(transactions));
+            localStorage.setItem('alex_balance', data.balance); localStorage.setItem('alex_profit', data.profit); localStorage.setItem('alex_transactions', JSON.stringify(transactions));
             updateDisplay();
 
             if (type === 'profit' && amount > 0) {
-                // Son Shopify
-                const soundPath = 'shopify.m4a?v=' + Date.now();
+                const soundPath = 'shopify.m4a?v=' + Date.now() + Math.random();
                 const audio = new Audio(soundPath);
                 audio.play().catch(() => {});
                 
-                // Notif Système
                 if (Notification.permission === "granted") {
                     navigator.serviceWorker.ready.then(reg => {
                         reg.showNotification('New Order', {
                             body: `[ALEX VAULT] New order for 1 item totaling ${amount}.00€`,
                             icon: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
-                            tag: 'sale-' + Date.now(),
+                            tag: 'sale-' + Date.now() + Math.random(),
                             renotify: true, silent: false, vibrate: [200, 100, 200],
                             priority: 'high', importance: 'high'
                         });
@@ -196,7 +184,6 @@
                 if(clock) clock.textContent = new Date().toLocaleTimeString('fr-FR'); 
             }, 1000);
         };
-
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
     </script>
 </body>
