@@ -26,7 +26,15 @@
     </style>
 </head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
+    
+    <div class="absolute top-6 right-6">
+        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl text-gray-500 dark:text-purple-300/60 transition-all active:scale-90 outline-none">
+            <span id="theme-icon"></span>
+        </button>
+    </div>
+
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
+
     <div id="main-content" class="fade-in-up text-center space-y-8 w-64">
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
@@ -35,8 +43,27 @@
         </div>
         <p id="error" class="text-red-500 text-[10px] hidden uppercase tracking-widest">Code incorrect</p>
     </div>
+
     <script>
-        window.onload = () => { setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; document.getElementById('main-content').classList.add('visible'); }, 50); };
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('theme-icon').innerHTML = isDark ? '&#9790;' : '&#9728;';
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon();
+        }
+
+        window.onload = () => { 
+            updateThemeIcon();
+            setTimeout(() => { 
+                document.getElementById('transition-layer').style.opacity = "0"; 
+                document.getElementById('main-content').classList.add('visible'); 
+            }, 50); 
+        };
+
         async function checkAccess() {
             if(document.getElementById('password').value === '1234') {
                 document.getElementById('transition-layer').style.opacity = "1";
@@ -47,6 +74,7 @@
                 setTimeout(() => err.classList.add('hidden'), 2000);
             }
         }
+
         document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
     </script>
 </body>
