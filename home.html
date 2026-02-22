@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex | PS</title>
+    <title>Alex | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function applyTheme() {
@@ -55,6 +55,17 @@
             flex: 1; display: flex; flex-direction: column;
         }
         .page-content.visible { opacity: 1; transform: translateY(0); }
+
+        /* NOUVEAU : Effet de survol sur les projets */
+        .project-item {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease !important;
+        }
+        .project-group:hover .project-item {
+            transform: translateX(10px);
+        }
+        .project-group:hover .project-date {
+            color: #8b5cf6; /* Devient violet au survol */
+        }
     </style>
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
@@ -81,17 +92,17 @@
         <main class="max-w-4xl mx-auto mt-24 px-6 flex-grow w-full pb-32">
             <div class="flex flex-col gap-16">
                 
-                <div class="flex flex-col md:flex-row gap-4 md:gap-0">
-                    <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">02.22.26 —</div>
+                <div class="project-group flex flex-col md:flex-row gap-4 md:gap-0 cursor-pointer">
+                    <div class="project-date date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic transition-colors duration-300">02.22.26 —</div>
                     <div class="flex-1">
-                        <div class="py-1 px-2 group rounded-sm cursor-default hover:bg-black/5 dark:hover:bg-purple-900/10 transition-all">
+                        <div class="project-item py-1 px-2 group rounded-sm transition-all">
                             <span class="block font-medium dark:text-purple-200 text-sm mb-1 uppercase tracking-tight">Personal Website V1</span>
                             <span class="text-gray-500 dark:text-purple-300/40 text-[11px] leading-relaxed italic uppercase tracking-wider">Déploiement de l'interface et système d'accès sécurisé</span>
                         </div>
                     </div>
                 </div>
 
-            </div>
+                </div>
         </main>
 
         <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/95 dark:bg-[#0a0510]/95 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
@@ -102,7 +113,6 @@
     </div>
 
     <script>
-        // Met à jour l'icône
         function updateThemeIcon(animate = false) {
             const themeIcon = document.getElementById('theme-icon');
             if (animate) {
@@ -117,7 +127,6 @@
             }
         }
 
-        // Chargement de la page
         window.onload = () => {
             updateThemeIcon(false);
             setTimeout(() => {
@@ -126,18 +135,15 @@
             }, 50);
         };
 
-        // Horloge
         function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
         setInterval(updateClock, 1000); updateClock();
 
-        // Mode Sombre
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon(true);
         }
 
-        // Déconnexion
         function logout() {
             document.getElementById('transition-layer').style.opacity = "1";
             document.getElementById('main-wrapper').style.opacity = "0";
@@ -147,4 +153,3 @@
     </script>
 </body>
 </html>
-
