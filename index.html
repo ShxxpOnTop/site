@@ -1,33 +1,40 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" id="html-tag" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alex | Accès</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script>
-        // SCRIPT ANTI-BOUCLE : Si le badge est présent, on saute direct au portfolio
+        // SCRIPT ANTI-BOUCLE & THEME : Si le badge est présent, on saute au portfolio
         if (localStorage.getItem('access_granted') === 'true') {
             window.location.replace("home.html");
         }
+        tailwind.config = { darkMode: 'class' }
     </script>
     <style>
-        body { background-color: #0a0510; font-family: sans-serif; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.4s ease; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center text-[#e9d5ff] overflow-hidden">
+<body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff] overflow-hidden">
+
+    <nav class="fixed top-0 right-0 p-8">
+        <button onclick="toggleDarkMode()" class="text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300 transition-colors">
+            [ <span id="mode-text">Dark</span> ]
+        </button>
+    </nav>
 
     <div class="text-center space-y-8 w-64">
-        <h1 class="logo-minimal text-4xl italic tracking-tighter">Alex.</h1>
+        <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
+                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
             
             <button onclick="checkAccess()" 
-                class="text-[10px] uppercase tracking-[0.3em] text-purple-300/40 hover:text-purple-300 transition-colors cursor-pointer">
+                class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 transition-colors cursor-pointer">
                 Entrer
             </button>
         </div>
@@ -38,8 +45,7 @@
     <script>
         function checkAccess() {
             const pass = document.getElementById('password').value;
-            // TON CODE ICI
-            if(pass === 'bobbyfishtheshxxp') {
+            if(pass === '1234') {
                 localStorage.setItem('access_granted', 'true');
                 window.location.replace("home.html");
             } else {
@@ -48,10 +54,33 @@
                 setTimeout(() => err.classList.add('hidden'), 2000);
             }
         }
-        // Valider avec Entrée
+
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') checkAccess();
         });
+
+        function toggleDarkMode() {
+            const html = document.getElementById('html-tag');
+            const modeText = document.getElementById('mode-text');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                modeText.textContent = 'Dark';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                modeText.textContent = 'Light';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Appliquer le thème sauvegardé au chargement
+        if (localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme')) {
+            document.getElementById('html-tag').classList.add('dark');
+            document.getElementById('mode-text').textContent = 'Light';
+        } else {
+            document.getElementById('html-tag').classList.remove('dark');
+            document.getElementById('mode-text').textContent = 'Dark';
+        }
     </script>
 </body>
 </html>
