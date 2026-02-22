@@ -20,23 +20,18 @@
         * { transition: all 0.3s ease !important; }
         body { font-family: 'Inter', sans-serif; background-color: #0a0510; color: #e9d5ff; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.05); padding: 1.5rem; border-radius: 4px; }
+        .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); padding: 1.5rem; border-radius: 4px; }
         
-        /* Boutons furtifs : Opacité à 0 par défaut */
-        .stealth-btn { 
-            opacity: 0.1; /* Presque invisible */
-            cursor: pointer;
-            font-family: monospace;
-            padding: 5px;
-            font-size: 14px;
+        /* Boutons ultra-discrets */
+        .stealth-control { 
+            opacity: 0.2; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: 300;
+            padding: 0 5px;
         }
-        .stat-card:hover .stealth-btn { 
-            opacity: 0.5; /* Devient un peu plus visible au survol */
-        }
-        .stealth-btn:active {
-            transform: scale(0.9);
-            opacity: 1 !important;
-        }
+        .stealth-control:hover { opacity: 1; color: #8b5cf6; }
+        .stealth-control:active { transform: scale(0.8); }
 
         #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; transition: opacity 0.4s ease-in-out !important; opacity: 1; }
     </style>
@@ -48,7 +43,7 @@
             <div class="flex items-center gap-4">
                 <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
                 <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] font-medium">
-                    <a href="home.html" class="text-gray-400">Index</a>
+                    <a href="home.html" class="text-gray-400 hover:text-white">Index</a>
                     <a href="#" class="text-white border-b border-purple-500">Dashboard</a>
                 </div>
             </div>
@@ -60,40 +55,75 @@
                 <div class="stat-card">
                     <div class="flex justify-between items-start mb-4">
                         <p class="text-[9px] uppercase tracking-widest text-gray-500">Balance</p>
-                        <div class="flex gap-4">
-                            <span onclick="updateMoney(-100)" class="stealth-btn text-purple-300">/</span>
-                            <span onclick="updateMoney(100)" class="stealth-btn text-purple-300">\</span>
+                        <div class="flex gap-3">
+                            <span onclick="updateValue('balance', -97)" class="stealth-control">−</span>
+                            <span onclick="updateValue('balance', 97)" class="stealth-control">+</span>
                         </div>
                     </div>
-                    <div class="text-4xl font-light tracking-tighter text-white"><span id="balance">0</span>€</div>
+                    <div class="text-4xl font-light tracking-tighter text-white"><span id="balance-val">0</span>€</div>
                 </div>
+
                 <div class="stat-card">
-                    <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-4">Net Profit</p>
-                    <div class="text-4xl font-light tracking-tighter text-white">3,200€</div>
+                    <div class="flex justify-between items-start mb-4">
+                        <p class="text-[9px] uppercase tracking-widest text-gray-500">Net Profit</p>
+                        <div class="flex gap-3">
+                            <span onclick="updateValue('profit', -97)" class="stealth-control">−</span>
+                            <span onclick="updateValue('profit', 97)" class="stealth-control">+</span>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-light tracking-tighter text-white"><span id="profit-val">0</span>€</div>
                 </div>
             </div>
             
-            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-4 opacity-30">Logs</h3>
-            <div id="transaction-list" class="space-y-1 border-t border-purple-900/10 pt-4 opacity-20"></div>
+            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-4">Recent Operations</h3>
+            <div id="transaction-list" class="space-y-2 border-t border-purple-900/10 pt-4">
+                </div>
         </main>
     </div>
 
     <script>
-        let currentBalance = parseInt(localStorage.getItem('my_balance')) || 12540;
-        function updateDisplay() { 
-            document.getElementById('balance').innerText = currentBalance.toLocaleString(); 
-            localStorage.setItem('my_balance', currentBalance); 
+        // Chargement des données sauvegardées
+        let data = {
+            balance: parseInt(localStorage.getItem('alex_balance')) || 12540,
+            profit: parseInt(localStorage.getItem('alex_profit')) || 3200
+        };
+
+        function updateDisplay() {
+            document.getElementById('balance-val').innerText = data.balance.toLocaleString();
+            document.getElementById('profit-val').innerText = data.profit.toLocaleString();
+            localStorage.setItem('alex_balance', data.balance);
+            localStorage.setItem('alex_profit', data.profit);
         }
-        function updateMoney(amount) { 
-            currentBalance += amount; 
-            updateDisplay(); 
+
+        function updateValue(type, amount) {
+            data[type] += amount;
+            if(data[type] < 0) data[type] = 0;
+            updateDisplay();
+            
+            // Ajout au journal (Logs)
+            const list = document.getElementById('transaction-list');
             const div = document.createElement('div');
-            div.className = "flex justify-between py-1 text-[10px] font-mono";
-            div.innerHTML = `<span>ID_${Math.floor(Math.random()*1000)}</span><span>${amount > 0 ? '+' : ''}${amount}</span>`;
-            document.getElementById('transaction-list').prepend(div);
+            div.className = "flex justify-between py-3 border-b border-purple-900/5 hover:bg-white/5 px-2 transition-all";
+            const dateStr = new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
+            
+            div.innerHTML = `
+                <span class="text-gray-500 font-mono text-[11px]">${dateStr}</span>
+                <span class="uppercase tracking-widest text-[11px]">${type === 'balance' ? 'System Adj' : 'Profit Adj'}</span>
+                <span class="${amount > 0 ? 'text-green-400' : 'text-red-400'} font-mono">${amount > 0 ? '+' : ''}${amount}.00€</span>
+            `;
+            list.prepend(div);
         }
-        window.onload = () => { setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); updateDisplay(); };
-        function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
+
+        window.onload = () => {
+            setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50);
+            updateDisplay();
+        };
+
+        function logout() {
+            document.getElementById('transition-layer').style.opacity = "1";
+            localStorage.removeItem('access_granted');
+            setTimeout(() => { window.location.replace("index.html"); }, 400);
+        }
     </script>
 </body>
 </html>
