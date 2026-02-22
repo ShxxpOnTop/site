@@ -13,19 +13,24 @@
     </script>
     <style>
         * { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease !important; }
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; overflow: hidden; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        /* Couche de transition */
+        
         #transition-layer {
-            position: fixed; top: 0; left: 0; w-full: 100%; h-full: 100%;
-            width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 9999;
-            transition: opacity 0.5s ease-in-out !important;
-            opacity: 0;
+            transition: opacity 0.6s ease-in-out !important; opacity: 1;
         }
+
+        /* Animation du contenu */
+        .fade-in-up {
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out !important;
+        }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff] overflow-hidden">
+<body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
 
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
 
@@ -35,7 +40,7 @@
         </button>
     </nav>
 
-    <div class="text-center space-y-8 w-64">
+    <div id="main-content" class="fade-in-up text-center space-y-8 w-64">
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
@@ -49,13 +54,19 @@
     </div>
 
     <script>
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('transition-layer').style.opacity = "0";
+                document.getElementById('main-content').classList.add('visible');
+            }, 100);
+        };
+
         async function checkAccess() {
             if(document.getElementById('password').value === '1234') {
-                // Effet de sortie
                 document.getElementById('transition-layer').style.opacity = "1";
+                document.getElementById('main-content').style.opacity = "0";
                 localStorage.setItem('access_granted', 'true');
-                // On attend la fin de l'anim avant de changer de page
-                setTimeout(() => { window.location.replace("home.html"); }, 500);
+                setTimeout(() => { window.location.replace("home.html"); }, 600);
             } else {
                 const err = document.getElementById('error');
                 err.classList.remove('hidden');
