@@ -7,28 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script>
-        // 1. SYNC THEME IMMEDIATE
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
         } else {
             document.documentElement.classList.add('dark');
         }
-
-        // 2. SKIP PAGE
         if (localStorage.getItem('access_granted') === 'true') {
             window.location.replace("home.html");
         }
         tailwind.config = { darkMode: 'class' }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.4s ease; }
+        /* TRANSITION GLOBALE : Force tous les éléments à changer en même temps */
+        * { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease !important; }
+        body { font-family: 'Inter', sans-serif; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff] overflow-hidden">
 
     <nav class="fixed top-0 right-0 p-8">
-        <button onclick="toggleDarkMode()" class="text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300 transition-colors">
+        <button onclick="toggleDarkMode()" class="text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300">
             [ <span id="mode-text">Dark</span> ]
         </button>
     </nav>
@@ -37,9 +36,9 @@
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
+                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm">
             <button onclick="checkAccess()" 
-                class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 transition-colors cursor-pointer">
+                class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer">
                 Entrer
             </button>
         </div>
@@ -57,16 +56,11 @@
                 setTimeout(() => err.classList.add('hidden'), 2000);
             }
         }
-
         function toggleDarkMode() {
-            const html = document.getElementById('html-tag');
-            const modeText = document.getElementById('mode-text');
-            const isDark = html.classList.toggle('dark');
+            const isDark = document.getElementById('html-tag').classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            modeText.textContent = isDark ? 'Light' : 'Dark';
+            document.getElementById('mode-text').textContent = isDark ? 'Light' : 'Dark';
         }
-
-        // Init text bouton au chargement
         document.getElementById('mode-text').textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
         document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
     </script>
