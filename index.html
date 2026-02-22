@@ -7,7 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script>
-        // SCRIPT ANTI-BOUCLE & THEME : Si le badge est présent, on saute au portfolio
+        // 1. SYNC THEME IMMEDIATE
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+
+        // 2. SKIP PAGE
         if (localStorage.getItem('access_granted') === 'true') {
             window.location.replace("home.html");
         }
@@ -28,24 +35,20 @@
 
     <div class="text-center space-y-8 w-64">
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
-        
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
                 class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
-            
             <button onclick="checkAccess()" 
                 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 transition-colors cursor-pointer">
                 Entrer
             </button>
         </div>
-        
         <p id="error" class="text-red-500 text-[10px] hidden uppercase tracking-widest">Code incorrect</p>
     </div>
 
     <script>
         function checkAccess() {
-            const pass = document.getElementById('password').value;
-            if(pass === '1234') {
+            if(document.getElementById('password').value === '1234') {
                 localStorage.setItem('access_granted', 'true');
                 window.location.replace("home.html");
             } else {
@@ -55,32 +58,17 @@
             }
         }
 
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkAccess();
-        });
-
         function toggleDarkMode() {
             const html = document.getElementById('html-tag');
             const modeText = document.getElementById('mode-text');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                modeText.textContent = 'Dark';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                modeText.textContent = 'Light';
-                localStorage.setItem('theme', 'dark');
-            }
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            modeText.textContent = isDark ? 'Light' : 'Dark';
         }
 
-        // Appliquer le thème sauvegardé au chargement
-        if (localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme')) {
-            document.getElementById('html-tag').classList.add('dark');
-            document.getElementById('mode-text').textContent = 'Light';
-        } else {
-            document.getElementById('html-tag').classList.remove('dark');
-            document.getElementById('mode-text').textContent = 'Dark';
-        }
+        // Init text bouton au chargement
+        document.getElementById('mode-text').textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
+        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
     </script>
 </body>
 </html>
