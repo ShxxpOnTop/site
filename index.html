@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" id="html-tag" class="dark">
+<html lang="fr" id="html-tag">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -13,6 +13,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    
     <script>
         function applyTheme() {
             const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -22,40 +23,125 @@
         if (localStorage.getItem('access_granted') === 'true') { window.location.replace("home.html"); }
         tailwind.config = { darkMode: 'class' }
     </script>
+
     <style>
-        * { transition: all 0.3s ease !important; }
-        body { font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
+        /* Optimisation GPU */
+        * { 
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            margin: 0; 
+            overscroll-behavior-y: none;
+        }
+
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        #transition-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 1; }
+
+        /* Notifications style Nothing */
+        .notification {
+            background: rgba(10, 5, 16, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .notification.show { opacity: 1; transform: translateY(0); }
+
+        #transition-layer { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            pointer-events: none; z-index: 9999; opacity: 1; 
+            background: inherit; transition: opacity 0.5s ease !important;
+        }
+
+        #main-content {
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
-    <div class="absolute top-6 right-6">
-        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl text-gray-400 dark:text-purple-300/40 active:scale-90"><span id="theme-icon"></span></button>
-    </div>
+    
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
+
+    <div class="absolute top-6 right-6">
+        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl text-gray-400 dark:text-purple-300/40 active:scale-90">
+            <span id="theme-icon"></span>
+        </button>
+    </div>
+
     <div id="main-content" class="text-center space-y-8 w-64">
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
-            <input type="password" id="password" placeholder="CODE" class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400/30">
+            <input type="password" id="password" placeholder="CODE" 
+                   class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400/30">
             <button onclick="checkAccess()" class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/30 hover:text-purple-500">Enter</button>
         </div>
-        <p id="error" class="text-red-500 text-[10px] hidden uppercase tracking-widest">Denied</p>
     </div>
+
+    <div id="notification-container" class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <script>
-        function updateThemeIcon() { document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; }
-        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateThemeIcon(); }
-        window.onload = () => { updateThemeIcon(); setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); };
+        function updateThemeIcon() { 
+            document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; 
+        }
+
+        function toggleDarkMode() { 
+            const isDark = document.documentElement.classList.toggle('dark'); 
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+            updateThemeIcon(); 
+        }
+
+        function notify(message) {
+            const container = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            toast.className = 'notification';
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        window.onload = () => { 
+            updateThemeIcon(); 
+            setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); 
+        };
+
         function checkAccess() {
-            if(document.getElementById('password').value === '1234') {
+            const pass = document.getElementById('password').value;
+            if(pass === '1234') {
+                notify("Access Granted");
                 localStorage.setItem('access_granted', 'true');
-                window.location.replace("home.html");
+                setTimeout(() => {
+                    document.getElementById('main-content').style.opacity = "0";
+                    window.location.replace("home.html");
+                }, 800);
             } else {
-                const err = document.getElementById('error'); err.classList.remove('hidden');
-                setTimeout(() => err.classList.add('hidden'), 2000);
+                notify("Access Denied");
+                const input = document.getElementById('password');
+                input.value = '';
+                input.classList.add('border-red-500');
+                setTimeout(() => input.classList.remove('border-red-500'), 1000);
             }
         }
-        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
+
+        document.getElementById('password').addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') checkAccess(); 
+        });
     </script>
 </body>
 </html>
