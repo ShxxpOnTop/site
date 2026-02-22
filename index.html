@@ -7,23 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script>
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
-        if (localStorage.getItem('access_granted') === 'true') {
-            window.location.replace("home.html");
-        }
+        if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); }
+        if (localStorage.getItem('access_granted') === 'true') { window.location.replace("home.html"); }
         tailwind.config = { darkMode: 'class' }
     </script>
     <style>
         * { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease !important; }
         body { font-family: 'Inter', sans-serif; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
+        /* Couche de transition */
+        #transition-layer {
+            position: fixed; top: 0; left: 0; w-full: 100%; h-full: 100%;
+            width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999;
+            transition: opacity 0.5s ease-in-out !important;
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff] overflow-hidden">
+
+    <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
 
     <nav class="fixed top-0 right-0 p-8">
         <button onclick="toggleDarkMode()" class="text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300">
@@ -45,10 +49,13 @@
     </div>
 
     <script>
-        function checkAccess() {
+        async function checkAccess() {
             if(document.getElementById('password').value === '1234') {
+                // Effet de sortie
+                document.getElementById('transition-layer').style.opacity = "1";
                 localStorage.setItem('access_granted', 'true');
-                window.location.replace("home.html");
+                // On attend la fin de l'anim avant de changer de page
+                setTimeout(() => { window.location.replace("home.html"); }, 500);
             } else {
                 const err = document.getElementById('error');
                 err.classList.remove('hidden');
