@@ -9,7 +9,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -26,6 +25,10 @@
         * { transition: background-color 0.3s ease, color 0.3s ease !important; }
         body { font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
+        
+        .status-pulse { width: 6px; height: 6px; border-radius: 50%; animation: pulse 2s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
+        
         .stat-card { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); padding: 1.5rem; border-radius: 4px; }
         .dark .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); }
         .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
@@ -42,6 +45,11 @@
         <nav class="relative flex justify-between items-center px-6 h-24 border-b border-gray-200 dark:border-purple-900/10 backdrop-blur-md sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 z-50">
             <div class="flex items-center gap-4">
                 <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
+                
+                <div class="hidden sm:flex items-center text-[9px] uppercase tracking-[0.3em] text-green-500 dark:text-purple-400/60">
+                    <span class="status-pulse bg-green-500 dark:bg-purple-500 mr-2"></span> System Online
+                </div>
+
                 <div class="flex gap-4 text-[10px] uppercase tracking-widest font-medium">
                     <a href="home.html" class="text-gray-400 hover:text-black dark:hover:text-white">Index</a>
                     <a href="#" class="text-black dark:text-white border-b border-black dark:border-purple-500">Dash</a>
@@ -80,24 +88,20 @@
     </div>
 
     <script>
+        /* SCRIPTS IDENTIQUES AU PRÉCÉDENT */
         let data = { balance: parseInt(localStorage.getItem('alex_balance')) || 12540, profit: parseInt(localStorage.getItem('alex_profit')) || 3200 };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
-
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
-            localStorage.setItem('alex_balance', data.balance); 
-            localStorage.setItem('alex_profit', data.profit);
-            const list = document.getElementById('transaction-list'); 
-            list.innerHTML = '';
+            localStorage.setItem('alex_balance', data.balance); localStorage.setItem('alex_profit', data.profit);
+            const list = document.getElementById('transaction-list'); list.innerHTML = '';
             transactions.forEach(tx => {
-                const div = document.createElement('div'); 
-                div.className = "flex justify-between py-4 border-b border-gray-100 dark:border-purple-900/5 px-2";
+                const div = document.createElement('div'); div.className = "flex justify-between py-4 border-b border-gray-100 dark:border-purple-900/5 px-2";
                 div.innerHTML = `<span class="text-gray-400 font-mono text-[10px]">${tx.time}</span><span class="uppercase tracking-widest text-[10px]">${tx.label}</span><span class="${tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-mono">${tx.amount > 0 ? '+' : ''}${tx.amount}€</span>`;
                 list.appendChild(div);
             });
         }
-
         function updateValue(type, amount) {
             data[type] += amount;
             transactions.unshift({ time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), label: type === 'balance' ? 'System Adj' : 'Profit Adj', amount: amount });
@@ -105,25 +109,17 @@
             localStorage.setItem('alex_transactions', JSON.stringify(transactions));
             updateDisplay();
         }
-
+        function updateThemeIcon() { document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; }
         function toggleDarkMode() { 
-            const isDark = document.documentElement.classList.toggle('dark'); 
-            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+            document.documentElement.classList.toggle('dark'); 
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
             updateThemeIcon(); 
         }
-
-        function updateThemeIcon() { document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; }
-        
         window.onload = () => { 
-            updateDisplay(); 
-            updateThemeIcon(); 
+            updateDisplay(); updateThemeIcon(); 
             setInterval(() => document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }), 1000); 
-            setTimeout(() => {
-                document.getElementById('transition-layer').style.opacity = "0";
-                document.getElementById('main-wrapper').classList.add('visible');
-            }, 50); 
+            setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; document.getElementById('main-wrapper').classList.add('visible'); }, 50); 
         };
-        
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
     </script>
 </body>
