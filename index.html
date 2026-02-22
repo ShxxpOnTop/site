@@ -3,55 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline | Mon Portfolio</title>
+    <title>Alex | PS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f6f6f6; color: #333; }
         .date-col { min-width: 100px; color: #888; font-variant-numeric: tabular-nums; }
         .row-hover:hover { background-color: #ededed; }
+        /* Empêche le contenu de se cacher derrière le footer fixe */
+        main { padding-bottom: 80px; }
     </style>
 </head>
-<body class="antialiased text-[13px]"> <nav class="flex justify-between items-center px-6 py-4">
-        <div class="font-medium">TonNom.</div>
+<body class="antialiased text-[13px]">
+
+    <nav class="flex justify-between items-center px-6 py-4">
+        <div class="font-medium">Alex.</div>
         <div class="flex gap-4 text-[11px] uppercase tracking-widest text-gray-500">
             <a href="#" class="hover:text-black">X</a>
             <a href="#" class="hover:text-black">IN</a>
             <a href="#" class="hover:text-black">IG</a>
+            <a href="#" class="hover:text-black">TT</a>
+            <a href="#" class="hover:text-black">YT</a>
+            <a href="#" class="hover:text-black">DC</a>
         </div>
     </nav>
 
     <main class="max-w-4xl mx-auto mt-20 px-6">
         <div class="flex flex-col gap-1">
-            
             <div class="flex py-1 row-hover px-2 transition-colors duration-200">
                 <span class="date-col">02.22.26</span>
-                <span class="flex-1">???</span>
+                <span class="flex-1">Mise en ligne de mon site</span>
             </div>
-
-            <div class="flex py-1 row-hover px-2 transition-colors duration-200">
-                <span class="date-col">02.16.26</span>
-                <span class="flex-1">Lancement de mon nouveau projet, App Voyage</span>
-            </div>
-
-            <div class="flex py-1 row-hover px-2 transition-colors duration-200">
-                <span class="date-col">02.10.26</span>
-                <span class="flex-1">Publication de ma première vidéo portfolio</span>
-            </div>
-
-            <div class="flex py-1 row-hover px-2 transition-colors duration-200">
-                <span class="date-col">01.20.26</span>
-                <span class="flex-1 text-blue-600 underline cursor-pointer">Lien vers un article important</span>
-            </div>
-
             </div>
     </main>
 
-    <footer class="fixed bottom-0 w-full flex justify-between px-6 py-4 text-[11px] text-gray-400">
-        <div>© 2026 Ton Nom</div>
+    <footer class="fixed bottom-0 w-full flex justify-between items-center px-6 py-4 text-[11px] text-gray-400 bg-[#f6f6f6]">
+        <div>© 2026 Alex</div>
         <div class="italic">m/p</div>
-        <div>Heure Locale: 15:36</div>
+        <div id="local-time">Heure Locale: --:--:--</div>
     </footer>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('local-time').textContent = `Heure Locale: ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Met à jour l'heure toutes les secondes
+        setInterval(updateClock, 1000);
+        // Appelle la fonction immédiatement pour éviter le délai de 1s au chargement
+        updateClock();
+    </script>
 
 </body>
 </html>
