@@ -139,6 +139,20 @@
         };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
 
+        // TOAST INTERNE
+        function notify(message) {
+            const container = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            toast.className = 'notification';
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
         // MISE À JOUR AFFICHAGE
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
@@ -153,61 +167,48 @@
             });
         }
 
-function updateValue(type, amount) {
-    data[type] += amount;
-    const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
-    
-    // 1. Mise à jour immédiate de l'interface (Visuel)
-    transactions.unshift({ 
-        time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
-        label: labelText, 
-        amount: amount 
-    });
-    
-    localStorage.setItem('alex_transactions', JSON.stringify(transactions));
-    localStorage.setItem('alex_balance', data.balance); 
-    localStorage.setItem('alex_profit', data.profit);
-    updateDisplay();
+        // FONCTION UNIQUE UPDATEVALUE
+        function updateValue(type, amount) {
+            data[type] += amount;
+            const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
+            
+            transactions.unshift({ 
+                time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
+                label: labelText, 
+                amount: amount 
+            });
+            
+            localStorage.setItem('alex_transactions', JSON.stringify(transactions));
+            localStorage.setItem('alex_balance', data.balance); 
+            localStorage.setItem('alex_profit', data.profit);
+            updateDisplay();
 
-    // 2. Logique avec délai de 5 secondes pour le Profit
-    if (type === 'profit' && amount > 0) {
-        // Feedback immédiat dans l'application
-        notify(`Processing Sale... (+${amount}€)`);
+            if (type === 'profit' && amount > 0) {
+                notify(`Processing order... (+${amount}€)`);
+                const amountCaptured = amount;
 
-        // Capture des données pour la notification future
-        const amountCaptured = amount;
-        const totalCaptured = data.profit;
+                // DÉLAI DE 5 SECONDES
+                setTimeout(() => {
+                    const audio = document.getElementById('cha-ching');
+                    if(audio) {
+                        audio.currentTime = 0;
+                        audio.play().catch(() => {});
+                    }
 
-        setTimeout(() => {
-            // A. Son "Cha-ching"
-            const audio = document.getElementById('cha-ching');
-            if(audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log("Audio en attente d'interaction"));
-            }
+                    if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
 
-            // B. Vibration (Nothing Phone)
-            if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
-
-            // C. Notification Système (Écran d'accueil)
-            if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification('New Sale! 💸', {
-                        body: `Success: +${amountCaptured}€\nTotal Profit: ${totalCaptured}€`,
-                        icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
-                        badge: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
-                        tag: 'sale-' + Date.now(),
-                        renotify: true
-                    });
-                });
-            }
-        }, 5000); // 5000 millisecondes = 5 secondes
-
-    } else {
-        // Notification simple et immédiate pour les autres actions
-        notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
-    }
-}
+                    if (Notification.permission === "granted") {
+                        navigator.serviceWorker.ready.then(reg => {
+                            reg.showNotification('New Order', {
+                                body: `[ALEX VAULT] You have a new order for 1 item totaling ${amountCaptured}.00€ from Online Store.`,
+                                icon: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
+                                badge: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
+                                tag: 'sale-' + Date.now(),
+                                renotify: true
+                            });
+                        });
+                    }
+                }, 5000); 
 
             } else {
                 notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
@@ -241,7 +242,6 @@ function updateValue(type, amount) {
 
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
 
-        // Swipe pour retour
         let touchstartX = 0;
         document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
         document.addEventListener('touchend', e => { 
