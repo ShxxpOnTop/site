@@ -7,6 +7,28 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock actif : l\'écran ne se mettra pas en veille profonde');
+    }
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// Relancer le lock quand on revient sur l'app
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    requestWakeLock();
+  }
+});
+
+// Appeler au chargement
+requestWakeLock();
         function applyTheme() {
             const theme = localStorage.getItem('theme') || 'dark';
             document.documentElement.classList.toggle('dark', theme === 'dark');
