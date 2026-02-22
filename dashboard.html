@@ -4,26 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Alex | Dash</title>
-    
     <link rel="manifest" href="manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png">
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        function applyTheme() {
-            const currentTheme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.classList.toggle('dark', currentTheme === 'dark');
-        }
-        applyTheme();
-        if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
-        tailwind.config = { darkMode: 'class' }
-    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
         * { transition: all 0.3s ease !important; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; overflow-x: hidden; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
         .status-pulse { width: 6px; height: 6px; border-radius: 50%; animation: pulse 2s infinite ease-in-out; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
@@ -31,15 +17,13 @@
         .dark .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); }
         .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
         .stealth-control:hover { opacity: 1; color: #8b5cf6; }
-        #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 1; }
-        .page-content { opacity: 0; transform: translateY(10px); flex: 1; display: flex; flex-direction: column; }
-        .page-content.visible { opacity: 1; transform: translateY(0); }
+        #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 1; background: #0a0510; transition: opacity 0.4s ease !important; }
+        .slide-in-right { transform: translateX(100%) !important; opacity: 0 !important; }
     </style>
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
-    <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
-    
-    <div id="main-wrapper" class="page-content">
+    <div id="transition-layer"></div>
+    <div id="main-wrapper" class="flex flex-col min-h-screen transition-all duration-500">
         <nav class="relative flex justify-between items-center px-6 h-24 border-b border-gray-200 dark:border-purple-900/10 backdrop-blur-md sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 z-50">
             <div class="flex items-center gap-4">
                 <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
@@ -48,11 +32,9 @@
                     <a href="#" class="text-black dark:text-white border-b border-black dark:border-purple-500">Dash</a>
                 </div>
             </div>
-
             <div class="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center text-[9px] uppercase tracking-[0.3em] text-green-600 dark:text-purple-400/60">
                 <span class="status-pulse bg-green-500 dark:bg-purple-500 mr-2"></span> System Online
             </div>
-
             <div class="flex gap-2 items-center">
                 <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-lg text-gray-400 dark:text-purple-300/40 active:scale-90"><span id="theme-icon"></span></button>
                 <button onclick="logout()" class="text-[10px] text-gray-400 hover:text-red-500 uppercase tracking-widest px-2">Logout</button>
@@ -74,7 +56,6 @@
                     <div class="text-4xl font-light tracking-tighter dark:text-white text-black"><span id="profit-val">0</span>€</div>
                 </div>
             </div>
-            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-6 px-2">Recent Operations</h3>
             <div id="transaction-list" class="space-y-4 border-t border-gray-200 dark:border-purple-900/10 pt-4"></div>
         </main>
 
@@ -91,7 +72,6 @@
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
-            localStorage.setItem('alex_balance', data.balance); localStorage.setItem('alex_profit', data.profit);
             const list = document.getElementById('transaction-list'); list.innerHTML = '';
             transactions.forEach(tx => {
                 const div = document.createElement('div'); div.className = "flex justify-between py-4 border-b border-gray-100 dark:border-purple-900/5 px-2";
@@ -104,12 +84,24 @@
             transactions.unshift({ time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), label: type === 'balance' ? 'System Adj' : 'Profit Adj', amount: amount });
             if(transactions.length > 20) transactions.pop();
             localStorage.setItem('alex_transactions', JSON.stringify(transactions));
+            localStorage.setItem('alex_balance', data.balance); localStorage.setItem('alex_profit', data.profit);
             updateDisplay();
         }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateThemeIcon(); }
         function updateThemeIcon() { document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; }
-        window.onload = () => { updateDisplay(); updateThemeIcon(); setInterval(() => document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }), 1000); setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; document.getElementById('main-wrapper').classList.add('visible'); }, 50); };
+        window.onload = () => { updateDisplay(); updateThemeIcon(); setInterval(() => document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }), 1000); setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); };
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
+
+        // SWIPE LOGIC
+        let touchstartX = 0; let touchendX = 0;
+        document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
+        document.addEventListener('touchend', e => { 
+            touchendX = e.changedTouches[0].screenX; 
+            if (touchendX - touchstartX > 100) { 
+                document.getElementById('main-wrapper').classList.add('slide-in-right');
+                setTimeout(() => window.location.href = "home.html", 300);
+            }
+        }, false);
     </script>
 </body>
 </html>
