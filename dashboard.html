@@ -20,9 +20,25 @@
         * { transition: all 0.3s ease !important; }
         body { font-family: 'Inter', sans-serif; background-color: #0a0510; color: #e9d5ff; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); padding: 1.5rem; border-radius: 4px; }
+        .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.05); padding: 1.5rem; border-radius: 4px; }
+        
+        /* Boutons furtifs : Opacité à 0 par défaut */
+        .stealth-btn { 
+            opacity: 0.1; /* Presque invisible */
+            cursor: pointer;
+            font-family: monospace;
+            padding: 5px;
+            font-size: 14px;
+        }
+        .stat-card:hover .stealth-btn { 
+            opacity: 0.5; /* Devient un peu plus visible au survol */
+        }
+        .stealth-btn:active {
+            transform: scale(0.9);
+            opacity: 1 !important;
+        }
+
         #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; transition: opacity 0.4s ease-in-out !important; opacity: 1; }
-        .btn-money { padding: 4px 10px; border-radius: 2px; font-family: monospace; font-size: 12px; }
     </style>
 </head>
 <body class="antialiased text-[13px] dark:bg-[#0a0510]">
@@ -43,10 +59,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                 <div class="stat-card">
                     <div class="flex justify-between items-start mb-4">
-                        <p class="text-[9px] uppercase tracking-widest text-gray-500">Total Balance</p>
-                        <div class="flex gap-2">
-                            <button onclick="updateMoney(-100)" class="btn-money bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white">-100</button>
-                            <button onclick="updateMoney(100)" class="btn-money bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white">+100</button>
+                        <p class="text-[9px] uppercase tracking-widest text-gray-500">Balance</p>
+                        <div class="flex gap-4">
+                            <span onclick="updateMoney(-100)" class="stealth-btn text-purple-300">/</span>
+                            <span onclick="updateMoney(100)" class="stealth-btn text-purple-300">\</span>
                         </div>
                     </div>
                     <div class="text-4xl font-light tracking-tighter text-white"><span id="balance">0</span>€</div>
@@ -56,19 +72,24 @@
                     <div class="text-4xl font-light tracking-tighter text-white">3,200€</div>
                 </div>
             </div>
-            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-4">Journal</h3>
-            <div id="transaction-list" class="space-y-2 border-t border-purple-900/10 pt-4"></div>
+            
+            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-4 opacity-30">Logs</h3>
+            <div id="transaction-list" class="space-y-1 border-t border-purple-900/10 pt-4 opacity-20"></div>
         </main>
     </div>
 
     <script>
         let currentBalance = parseInt(localStorage.getItem('my_balance')) || 12540;
-        function updateDisplay() { document.getElementById('balance').innerText = currentBalance.toLocaleString(); localStorage.setItem('my_balance', currentBalance); }
+        function updateDisplay() { 
+            document.getElementById('balance').innerText = currentBalance.toLocaleString(); 
+            localStorage.setItem('my_balance', currentBalance); 
+        }
         function updateMoney(amount) { 
-            currentBalance += amount; updateDisplay(); 
+            currentBalance += amount; 
+            updateDisplay(); 
             const div = document.createElement('div');
-            div.className = "flex justify-between py-2 text-[11px] border-b border-purple-900/5";
-            div.innerHTML = `<span class="text-gray-500 font-mono">${new Date().toLocaleTimeString()}</span><span class="${amount > 0 ? 'text-green-400' : 'text-red-400'}">${amount > 0 ? '+' : ''}${amount}€</span>`;
+            div.className = "flex justify-between py-1 text-[10px] font-mono";
+            div.innerHTML = `<span>ID_${Math.floor(Math.random()*1000)}</span><span>${amount > 0 ? '+' : ''}${amount}</span>`;
             document.getElementById('transaction-list').prepend(div);
         }
         window.onload = () => { setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); updateDisplay(); };
