@@ -18,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     
     <style>
-        /* Accélération matérielle GPU */
         * { 
             transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
                         color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
@@ -74,6 +73,7 @@
     </style>
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
+    
     <audio id="cha-ching" src="https://www.soundjay.com/misc/sounds/cash-register-05.mp3" preload="auto"></audio>
     
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
@@ -132,12 +132,14 @@
     <div id="notification-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <script>
+        // DONNÉES
         let data = { 
             balance: parseInt(localStorage.getItem('alex_balance')) || 12540, 
             profit: parseInt(localStorage.getItem('alex_profit')) || 3200 
         };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
 
+        // MISE À JOUR AFFICHAGE
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
@@ -151,6 +153,7 @@
             });
         }
 
+        // NOTIFICATIONS INTERNES (TOASTS)
         function notify(message) {
             const container = document.getElementById('notification-container');
             const toast = document.createElement('div');
@@ -164,6 +167,7 @@
             }, 3000);
         }
 
+        // FONCTION UPDATE (AVEC DÉLAI 10S POUR SHOPIFY)
         function updateValue(type, amount) {
             data[type] += amount;
             const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
@@ -181,30 +185,37 @@
             
             updateDisplay();
 
-            // EFFET SHOPIFY
             if (type === 'profit' && amount > 0) {
-                // Son
-                const audio = document.getElementById('cha-ching');
-                audio.currentTime = 0;
-                audio.play();
+                // Feedback immédiat dans l'appli
+                notify(`Processing Sale... (+${amount}€)`);
 
-                // Notification interne
-                notify(`💰 SALE: +${amount}€ !`);
+                // On capture les valeurs pour les 10s de délai
+                const capturedAmount = amount;
+                const capturedTotal = data.profit;
 
-                // Vibration Nothing Phone
-                if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
+                setTimeout(() => {
+                    // 1. Son Cha-ching
+                    const audio = document.getElementById('cha-ching');
+                    if(audio) { audio.currentTime = 0; audio.play().catch(()=>{}); }
 
-                // Notification Écran d'accueil
-                if (Notification.permission === "granted") {
-                    navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification('New Sale! 💸', {
-                            body: `+${amount}€ added to profit. Total: ${data.profit}€`,
-                            icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
-                            vibrate: [100, 30, 100],
-                            badge: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png'
+                    // 2. Vibration (Nothing Phone)
+                    if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
+
+                    // 3. Notification Système (Cumulable)
+                    if (Notification.permission === "granted") {
+                        navigator.serviceWorker.ready.then(reg => {
+                            reg.showNotification('New Sale! 💸', {
+                                body: `Received: +${capturedAmount}€\nTotal Profit: ${capturedTotal}€`,
+                                icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
+                                badge: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
+                                vibrate: [100, 30, 100],
+                                tag: 'sale-' + Date.now(), // Tag unique pour empiler les notifs
+                                renotify: true
+                            });
                         });
-                    });
-                }
+                    }
+                }, 10000); // Délai de 10 secondes
+
             } else {
                 notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
             }
@@ -218,24 +229,30 @@
         }
 
         function updateThemeIcon() { 
-            document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; 
+            const icon = document.getElementById('theme-icon');
+            if(icon) icon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; 
         }
 
         window.onload = () => { 
             updateDisplay(); 
             updateThemeIcon(); 
-            setInterval(() => document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }), 1000); 
-            setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); 
-            setTimeout(() => notify("Data Synchronized"), 800);
+            setInterval(() => {
+                const clock = document.getElementById('local-time');
+                if(clock) clock.textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false });
+            }, 1000); 
+            setTimeout(() => { 
+                const layer = document.getElementById('transition-layer');
+                if(layer) layer.style.opacity = "0"; 
+            }, 50); 
         };
 
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
 
-        let touchstartX = 0; let touchendX = 0;
+        // Swipe pour retour
+        let touchstartX = 0;
         document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
         document.addEventListener('touchend', e => { 
-            touchendX = e.changedTouches[0].screenX; 
-            if (touchendX - touchstartX > 100) { 
+            if (e.changedTouches[0].screenX - touchstartX > 120) { 
                 document.getElementById('main-wrapper').classList.add('slide-in-right');
                 setTimeout(() => window.location.href = "home.html", 300);
             }
