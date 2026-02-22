@@ -6,8 +6,21 @@
     <title>Alex | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); }
-        if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
+        // Fonction pour gérer le thème au chargement
+        function applyTheme() {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        applyTheme();
+
+        // Redirection si l'accès n'est pas accordé
+        if (localStorage.getItem('access_granted') !== 'true') {
+            window.location.replace("index.html");
+        }
         tailwind.config = { darkMode: 'class' }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -57,19 +70,20 @@
 
     <div id="main-wrapper" class="page-content">
         <nav class="relative flex justify-between items-center px-6 h-24 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
-    
-    <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
-    
-    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center text-[10px] uppercase tracking-[0.25em] font-medium text-green-600 dark:text-purple-400/90">
-        <span class="status-pulse bg-green-500 dark:bg-purple-500"></span>
-        System Online
-    </div>
+            <div class="logo-minimal text-3xl font-normal dark:text-purple-400 translate-y-[2px]">Alex.</div>
+            
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center text-[10px] uppercase tracking-[0.25em] font-medium text-green-600 dark:text-purple-400/90">
+                <span class="status-pulse bg-green-500 dark:bg-purple-500"></span>
+                System Online
+            </div>
 
-    <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium">
-        <button onclick="toggleDarkMode()" class="hover:text-black dark:hover:text-purple-300">[ <span id="mode-text">Dark</span> ]</button>
-        <button onclick="logout()" class="hover:text-red-500 uppercase">Quitter</button>
-    </div>
-</nav>
+            <div class="flex gap-4 items-center">
+                <button onclick="toggleDarkMode()" class="text-xl leading-none text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300">
+                    <span id="theme-icon"></span>
+                </button>
+                <button onclick="logout()" class="text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium hover:text-red-500">Quitter</button>
+            </div>
+        </nav>
 
         <main class="max-w-4xl mx-auto mt-24 px-6 flex-grow w-full">
             <div class="flex flex-col gap-16">
@@ -100,37 +114,4 @@
         <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/95 dark:bg-[#0a0510]/95 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
             <div class="flex gap-4 font-medium flex-1"><span>© 2026 ALEX</span></div>
             <div class="absolute-center italic tracking-[0.5em] font-light text-gray-500 dark:text-purple-400/80 text-[12px]">a / k</div>
-            <div class="flex-1 text-right"><span id="local-time" class="font-mono text-[11px] dark:text-purple-300/80">--:--:--</span></div>
-        </footer>
-    </div>
-
-    <script>
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('transition-layer').style.opacity = "0";
-                document.getElementById('main-wrapper').classList.add('visible');
-            }, 50);
-        };
-
-        function updateClock() { 
-            document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); 
-        }
-        setInterval(updateClock, 1000); updateClock();
-
-        function toggleDarkMode() {
-            const isDark = document.getElementById('html-tag').classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('mode-text').textContent = isDark ? 'Light' : 'Dark';
-        }
-
-        function logout() {
-            document.getElementById('transition-layer').style.opacity = "1";
-            document.getElementById('main-wrapper').style.opacity = "0";
-            localStorage.removeItem('access_granted');
-            setTimeout(() => { window.location.replace("index.html"); }, 400);
-        }
-        document.getElementById('mode-text').textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
-    </script>
-</body>
-</html>
-
+            <div class="flex-1 text-right
