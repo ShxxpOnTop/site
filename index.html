@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Alex | Vault</title>
     
+    <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png">
@@ -26,18 +27,14 @@
         body { font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
         #transition-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 1; }
-        .fade-in-up { opacity: 0; transform: translateY(8px); }
-        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
     <div class="absolute top-6 right-6">
-        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl text-gray-400 dark:text-purple-300/40 active:scale-90">
-            <span id="theme-icon"></span>
-        </button>
+        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl text-gray-400 dark:text-purple-300/40 active:scale-90"><span id="theme-icon"></span></button>
     </div>
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
-    <div id="main-content" class="fade-in-up text-center space-y-8 w-64">
+    <div id="main-content" class="text-center space-y-8 w-64">
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
             <input type="password" id="password" placeholder="CODE" class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400/30">
@@ -48,12 +45,11 @@
     <script>
         function updateThemeIcon() { document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateThemeIcon(); }
-        window.onload = () => { updateThemeIcon(); setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; document.getElementById('main-content').classList.add('visible'); }, 50); };
-        async function checkAccess() {
+        window.onload = () => { updateThemeIcon(); setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50); };
+        function checkAccess() {
             if(document.getElementById('password').value === '1234') {
-                document.getElementById('transition-layer').style.opacity = "1";
                 localStorage.setItem('access_granted', 'true');
-                setTimeout(() => { window.location.replace("home.html"); }, 400);
+                window.location.replace("home.html");
             } else {
                 const err = document.getElementById('error'); err.classList.remove('hidden');
                 setTimeout(() => err.classList.add('hidden'), 2000);
