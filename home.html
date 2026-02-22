@@ -6,38 +6,27 @@
     <title>Alex | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Gestion immédiate du thème pour éviter le flash blanc
         function applyTheme() {
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') { document.documentElement.classList.remove('dark'); }
             else { document.documentElement.classList.add('dark'); }
         }
         applyTheme();
-
-        // Sécurité d'accès
         if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
-        
         tailwind.config = { darkMode: 'class' }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
         * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease !important; }
-        
         html, body { height: 100%; margin: 0; background-color: #f6f6f6; }
         .dark html, .dark body { background-color: #0a0510; }
-
         body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; }
         .logo-minimal { font-family: 'Playfair Display', serif; letter-spacing: -0.05em; }
-        
         .date-col { min-width: 140px; font-variant-numeric: tabular-nums; }
-        .violet-glow { text-shadow: 0 0 12px rgba(168, 85, 247, 0.4); }
-        .absolute-center { position: absolute; left: 50%; transform: translateX(-50%); }
-
-        /* Animation du point de status */
+        
         .status-pulse {
             width: 7px; height: 7px; border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px currentColor;
+            display: inline-block; box-shadow: 0 0 8px currentColor;
             animation: pulse 2s infinite ease-in-out;
         }
         @keyframes pulse {
@@ -46,13 +35,10 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Animation de rotation de l'icône de thème */
-        .theme-rotate {
-            animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .theme-rotate { animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes rotate-icon {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-            100% { transform: rotate(180deg) scale(1); opacity: 1; }
+            0% { transform: rotate(0deg); opacity: 0.5; }
+            100% { transform: rotate(180deg); opacity: 1; }
         }
 
         #transition-layer {
@@ -75,7 +61,6 @@
 
     <div id="main-wrapper" class="page-content">
         <nav class="relative flex justify-between items-center px-6 h-24 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
-            
             <div class="logo-minimal text-3xl font-normal dark:text-purple-400 translate-y-[2px]">Alex.</div>
             
             <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center text-[10px] uppercase tracking-[0.25em] font-medium text-green-600 dark:text-purple-400/90">
@@ -87,13 +72,12 @@
                 <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl leading-none text-gray-500 dark:text-purple-300/60 hover:text-black dark:hover:text-purple-300 transition-all active:scale-90 outline-none">
                     <span id="theme-icon" class="block pointer-events-none"></span>
                 </button>
-                <button onclick="logout()" class="text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium hover:text-red-500 px-2">Quitter</button>
+                <button onclick="logout()" class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-purple-300/40 font-medium hover:text-red-500 px-2">Quitter</button>
             </div>
         </nav>
 
         <main class="max-w-4xl mx-auto mt-24 px-6 flex-grow w-full pb-32">
             <div class="flex flex-col gap-16">
-                
                 <div class="flex flex-col md:flex-row gap-4 md:gap-0">
                     <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">02.22.26 —</div>
                     <div class="flex-1">
@@ -103,7 +87,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="flex flex-col md:flex-row gap-4 md:gap-0">
                     <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">01.12.26 —</div>
                     <div class="flex-1">
@@ -113,7 +96,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </main>
 
@@ -125,15 +107,18 @@
     </div>
 
     <script>
-        // Met à jour l'icône avec option d'animation
         function updateThemeIcon(animate = false) {
             const themeIcon = document.getElementById('theme-icon');
             if (animate) {
                 themeIcon.classList.remove('theme-rotate');
-                void themeIcon.offsetWidth; // Trigger reflow pour relancer l'animation
+                void themeIcon.offsetWidth; 
                 themeIcon.classList.add('theme-rotate');
+                setTimeout(() => {
+                    themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
+                }, 200);
+            } else {
+                themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
             }
-            themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
         }
 
         window.onload = () => {
@@ -144,9 +129,7 @@
             }, 50);
         };
 
-        function updateClock() { 
-            document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); 
-        }
+        function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
         setInterval(updateClock, 1000); updateClock();
 
         function toggleDarkMode() {
