@@ -1,48 +1,93 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr" id="html-tag" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accès Réservé</title>
+    <title>Alex | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
     <script>
-        // SCRIPT SKIP : Si on a déjà le badge d'accès, on part direct sur home.html
-        if (localStorage.getItem('access_granted') === 'true') {
-            window.location.href = "home.html";
+        // SÉCURITÉ : Si pas de badge, on renvoie à la porte
+        if (localStorage.getItem('access_granted') !== 'true') {
+            window.location.replace("index.html");
         }
+        tailwind.config = { darkMode: 'class' }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; }
+        .logo-minimal { font-family: 'Playfair Display', serif; letter-spacing: -0.05em; }
+        .date-col { min-width: 100px; font-variant-numeric: tabular-nums; }
+        main { padding-bottom: 120px; }
+        .violet-glow { text-shadow: 0 0 12px rgba(168, 85, 247, 0.4); }
+        .absolute-center { position: absolute; left: 50%; transform: translateX(-50%); }
+    </style>
 </head>
-<body class="bg-[#0a0510] text-[#e9d5ff] h-screen flex items-center justify-center font-sans">
+<body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
 
-    <div class="text-center space-y-8 w-64 animate-pulse">
-        <h1 class="font-serif text-4xl italic tracking-tighter">Alex.</h1>
-        
-        <div class="space-y-4">
-            <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
-            
-            <button onclick="checkAccess()" 
-                class="text-[10px] uppercase tracking-[0.3em] text-purple-300/40 hover:text-purple-300 transition-colors">
-                Entrer
+    <nav class="flex justify-between items-center px-6 py-8 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50">
+        <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
+        <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium">
+            <button onclick="toggleDarkMode()" class="hover:text-black dark:hover:text-purple-300 transition-colors">
+                [ <span id="mode-text">Dark</span> ]
             </button>
+            <button onclick="logout()" class="hover:text-red-500 transition-colors uppercase">Quitter</button>
         </div>
-        
-        <p id="error" class="text-red-500 text-[10px] hidden uppercase tracking-widest">Code incorrect</p>
-    </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto mt-20 px-6">
+        <div class="flex flex-col gap-10">
+            <div class="flex flex-col md:flex-row gap-2 md:gap-0">
+                <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-medium">02.22.26</div>
+                <div class="flex-1 flex flex-col gap-1">
+                    <div class="py-1 px-2 transition-all duration-200 hover:bg-black/5 dark:hover:bg-purple-900/20 group rounded-sm cursor-default">
+                        <span class="dark:text-purple-400 violet-glow group-hover:translate-x-1 inline-block transition-transform">Système de verrouillage activé.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/90 dark:bg-[#0a0510]/90 backdrop-blur-md border-t border-gray-200/50 dark:border-purple-900/10 z-50">
+        <div class="flex gap-4 font-medium flex-1">
+            <span>© 2026 ALEX</span>
+            <a href="mailto:ton@email.com" class="hover:text-black dark:hover:text-purple-300 transition-colors uppercase tracking-widest">Contact</a>
+        </div>
+
+        <div class="absolute-center italic tracking-[0.5em] font-light text-gray-300 dark:text-purple-900/50 text-[12px]">a/k</div>
+
+        <div class="flex-1 text-right">
+            <span id="local-time" class="font-mono tabular-nums tracking-tighter text-[11px] dark:text-purple-300/80">--:--:--</span>
+        </div>
+    </footer>
 
     <script>
-        function checkAccess() {
-            const pass = document.getElementById('password').value;
-            // CHANGE LE CODE ICI (actuellement 1234)
-            if(pass === '1234') {
-                localStorage.setItem('access_granted', 'true'); // Donne le badge d'accès
-                window.location.href = "home.html";
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('local-time').textContent = now.toLocaleTimeString('fr-FR', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function toggleDarkMode() {
+            const html = document.getElementById('html-tag');
+            const modeText = document.getElementById('mode-text');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark'); modeText.textContent = 'Dark'; localStorage.setItem('theme', 'light');
             } else {
-                document.getElementById('error').classList.remove('hidden');
+                html.classList.add('dark'); modeText.textContent = 'Light'; localStorage.setItem('theme', 'dark');
             }
         }
-        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
+
+        function logout() {
+            localStorage.removeItem('access_granted');
+            window.location.replace("index.html");
+        }
+
+        // Init thème
+        if (localStorage.getItem('theme') === 'dark') {
+            document.getElementById('html-tag').classList.add('dark');
+            document.getElementById('mode-text').textContent = 'Light';
+        }
     </script>
 </body>
 </html>
