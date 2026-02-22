@@ -167,5 +167,28 @@
         }, false);
     </script>
     <div id="notification-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        // ... tout ton code javascript existant ...
+
+        // 3. Ajoute la fonction notify ici (à l'intérieur du script)
+        function notify(message) {
+            const container = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            toast.className = 'notification'; // Assure-toi d'avoir mis le CSS dans <style>
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // Exemple : Envoyer une notif au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => notify("System Synchronized"), 1000);
+        });
+    </script>
 </body>
 </html>
