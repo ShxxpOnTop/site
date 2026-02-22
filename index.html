@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <title>Accès Réservé</title>
+</head>
+<body class="bg-[#0a0510] text-[#e9d5ff] h-screen flex items-center justify-center font-sans">
+
+    <div class="text-center space-y-8 w-64">
+        <h1 class="font-serif text-4xl italic tracking-tighter">Alex.</h1>
+        
+        <div class="space-y-4">
+            <input type="password" id="password" placeholder="Code d'accès" 
+                class="w-full bg-transparent border-b border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
+            
+            <button onclick="checkAccess()" 
+                class="text-[10px] uppercase tracking-[0.3em] text-purple-300/40 hover:text-purple-300 transition-colors">
+                Entrer
+            </button>
+        </div>
+        
+        <p id="error" class="text-red-500 text-[10px] hidden uppercase tracking-widest">Code incorrect</p>
+    </div>
+
+    <script>
+        function checkAccess() {
+            const pass = document.getElementById('password').value;
+            // ICI : Change '1234' par ton mot de passe
+            if(pass === '1234') {
+                window.location.href = "home.html";
+            } else {
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+        // Permet de valider avec la touche Entrée
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+    </script>
+</body>
+</html>
