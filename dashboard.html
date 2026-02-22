@@ -7,28 +7,21 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // --- PROTECTION VEILLE (WAKE LOCK) ---
         let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock actif');
+                }
+            } catch (err) { console.error('Erreur Wake Lock:', err.message); }
+        }
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
+        });
+        requestWakeLock();
 
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      console.log('Wake Lock actif : l\'écran ne se mettra pas en veille profonde');
-    }
-  } catch (err) {
-    console.error(`${err.name}, ${err.message}`);
-  }
-}
-
-// Relancer le lock quand on revient sur l'app
-document.addEventListener('visibilitychange', async () => {
-  if (wakeLock !== null && document.visibilityState === 'visible') {
-    requestWakeLock();
-  }
-});
-
-// Appeler au chargement
-requestWakeLock();
         function applyTheme() {
             const theme = localStorage.getItem('theme') || 'dark';
             document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -46,47 +39,35 @@ requestWakeLock();
                         border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
             -webkit-font-smoothing: antialiased;
         }
-
         body { 
             font-family: 'Inter', sans-serif; 
             display: flex; flex-direction: column; min-height: 100vh; margin: 0; 
             overflow-x: hidden; overscroll-behavior-y: none;
         }
-
         #main-wrapper { will-change: transform, opacity; backface-visibility: hidden; transform: translateZ(0); }
-
         .slide-in-right { 
             transform: translateX(100%) translateZ(0) !important; 
             opacity: 0 !important; 
             transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.3s ease !important;
         }
-
         .stat-card { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); padding: 1.5rem; border-radius: 4px; }
         .dark .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); }
         .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
         .stealth-control:hover { opacity: 1; color: #8b5cf6; }
-
         .notification {
             background: rgba(10, 5, 16, 0.9);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(139, 92, 246, 0.3);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            opacity: 0;
-            transform: translateY(20px);
+            color: white; padding: 12px 24px; border-radius: 4px;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;
+            opacity: 0; transform: translateY(20px);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .notification.show { opacity: 1; transform: translateY(0); }
-
         .logo-minimal { font-family: 'Playfair Display', serif; }
         .status-pulse { width: 6px; height: 6px; border-radius: 50%; animation: pulse 3s infinite ease-in-out; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
         #transition-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             pointer-events: none; z-index: 9999; opacity: 1; 
@@ -95,8 +76,6 @@ requestWakeLock();
     </style>
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
-    
-    <audio id="cha-ching" src="shopify.m4a" preload="auto"></audio>
     
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
     
@@ -154,14 +133,12 @@ requestWakeLock();
     <div id="notification-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <script>
-        // DONNÉES LOCALES
         let data = { 
             balance: parseInt(localStorage.getItem('alex_balance')) || 12540, 
             profit: parseInt(localStorage.getItem('alex_profit')) || 3200 
         };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
 
-        // SYSTÈME DE TOASTS INTERNES
         function notify(message) {
             const container = document.getElementById('notification-container');
             const toast = document.createElement('div');
@@ -175,7 +152,6 @@ requestWakeLock();
             }, 3000);
         }
 
-        // MISE À JOUR DE L'AFFICHAGE
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
@@ -189,7 +165,6 @@ requestWakeLock();
             });
         }
 
-        // LOGIQUE DES BOUTONS + / -
         function updateValue(type, amount) {
             data[type] += amount;
             const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
@@ -207,53 +182,46 @@ requestWakeLock();
             localStorage.setItem('alex_profit', data.profit);
             updateDisplay();
 
-            // LOGIQUE SHOPIFY (SI PROFIT POSITIF)
             if (type === 'profit' && amount > 0) {
                 notify(`Processing order... (+${amount}€)`);
                 const amountCaptured = amount;
 
-                // DÉLAI DE 5 SECONDES
-                // DÉLAI DE 5 SECONDES
-            setTimeout(() => {
-            // 1. Forcer une nouvelle instance unique avec un paramètre de temps
-            // On ajoute ?t=... pour que le navigateur recharge le son à chaque fois
-                const soundPath = 'shopify.m4a?t=' + Date.now();
-                const instanceAudio = new Audio(soundPath);
-            
-            // On force le volume à fond et on lance
-                instanceAudio.volume = 1.0;
-                instanceAudio.play().catch(e => console.log("Audio bloqué par le système"));
+                setTimeout(() => {
+                    // SON UNIQUE PAR CLIC
+                    const soundPath = 'shopify.m4a?v=' + Date.now();
+                    const audio = new Audio(soundPath);
+                    audio.play().catch(e => console.log("Audio bloqué"));
 
-            // 2. Vibration (Nothing Phone)
-                if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+                    // VIBRATION
+                    if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
 
-            // 3. Notification Système
-                if (Notification.permission === "granted") {
-                    navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification('New Order', {
-                            body: `[ALEX VAULT] You have a new order for 1 item totaling ${amountCaptured}.00€ from Online Store.`,
-                            icon: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
-                            badge: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
-                            tag: 'sale-' + Date.now(),
-                            renotify: true,
-                            silent: false,
-                            vibrate: [200, 100, 200],
-                            requireInteraction: true
+                    // NOTIFICATION HAUTE PRIORITÉ
+                    if (Notification.permission === "granted") {
+                        navigator.serviceWorker.ready.then(reg => {
+                            reg.showNotification('New Order', {
+                                body: `[ALEX VAULT] You have a new order for 1 item totaling ${amountCaptured}.00€ from Online Store.`,
+                                icon: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
+                                badge: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
+                                tag: 'sale-' + Date.now(),
+                                renotify: true,
+                                silent: false,
+                                vibrate: [200, 100, 200],
+                                requireInteraction: true,
+                                priority: 'high',
+                                importance: 'high'
+                            });
                         });
-                    });
-                }
-            }, 5000);
-              } else {
+                    }
+                }, 5000);
+            } else {
                 notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
             }
         }
 
-        // THEME & UTILS
         function toggleDarkMode() { 
             const isDark = document.documentElement.classList.toggle('dark'); 
             localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
             updateThemeIcon(); 
-            notify(isDark ? "Dark Mode" : "Light Mode");
         }
 
         function updateThemeIcon() { 
@@ -264,6 +232,9 @@ requestWakeLock();
         window.onload = () => { 
             updateDisplay(); 
             updateThemeIcon(); 
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').then(() => console.log("SW Ready"));
+            }
             setInterval(() => {
                 const clock = document.getElementById('local-time');
                 if(clock) clock.textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false });
@@ -279,7 +250,6 @@ requestWakeLock();
             window.location.replace("index.html"); 
         }
 
-        // SWIPE POUR RETOUR
         let touchstartX = 0;
         document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
         document.addEventListener('touchend', e => { 
