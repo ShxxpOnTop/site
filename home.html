@@ -58,19 +58,19 @@
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
 
     <div id="main-wrapper" class="page-content">
-        <nav class="flex justify-between items-center px-6 py-8 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
-            <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
-            
-            <div class="hidden md:flex items-center text-[10px] uppercase tracking-[0.2em] font-medium text-green-500 dark:text-purple-400/80">
-                <span class="status-pulse bg-green-500 dark:bg-purple-500"></span>
-                System Online
-            </div>
+        <nav class="flex justify-between items-baseline px-6 py-8 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
+    <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
+    
+    <div class="hidden md:flex items-center text-[10px] uppercase tracking-[0.2em] font-medium text-green-600 dark:text-purple-400/80 translate-y-[-2px]">
+        <span class="status-pulse bg-green-500 dark:bg-purple-500"></span>
+        System Online
+    </div>
 
-            <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium">
-                <button onclick="toggleDarkMode()" class="hover:text-black dark:hover:text-purple-300">[ <span id="mode-text">Dark</span> ]</button>
-                <button onclick="logout()" class="hover:text-red-500 uppercase">Quitter</button>
-            </div>
-        </nav>
+    <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium">
+        <button onclick="toggleDarkMode()" class="hover:text-black dark:hover:text-purple-300">[ <span id="mode-text">Dark</span> ]</button>
+        <button onclick="logout()" class="hover:text-red-500 uppercase">Quitter</button>
+    </div>
+</nav>
 
         <main class="max-w-4xl mx-auto mt-24 px-6 flex-grow w-full">
             <div class="flex flex-col gap-16">
@@ -135,3 +135,4 @@
     </script>
 </body>
 </html>
+
