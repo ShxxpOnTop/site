@@ -35,11 +35,12 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Tour complet 360 pour garder l'icône droite */
-        .theme-rotate { animation: rotate-icon 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        @keyframes rotate-icon {
-            0% { transform: rotate(0deg); opacity: 0.5; }
-            100% { transform: rotate(360deg); opacity: 1; }
+        .theme-rotate { animation: switch-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes switch-icon {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            50% { transform: rotate(90deg) scale(0.5); opacity: 0; }
+            51% { transform: rotate(-90deg) scale(0.5); opacity: 0; }
+            100% { transform: rotate(0deg) scale(1); opacity: 1; }
         }
 
         #transition-layer {
@@ -107,7 +108,7 @@
                 themeIcon.classList.add('theme-rotate');
                 setTimeout(() => {
                     themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
-                }, 250);
+                }, 200);
             } else {
                 themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
             }
