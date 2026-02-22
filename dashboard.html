@@ -2,12 +2,16 @@
 <html lang="fr" id="html-tag" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Alex | Dash</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/512/8b5cf6/security-configuration.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function applyTheme() {
-            const currentTheme = localStorage.getItem('theme');
+            const currentTheme = localStorage.getItem('theme') || 'dark';
             if (currentTheme === 'light') { document.documentElement.classList.remove('dark'); }
             else { document.documentElement.classList.add('dark'); }
         }
@@ -18,100 +22,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
         * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important; }
-        body { font-family: 'Inter', sans-serif; background-color: #0a0510; color: #e9d5ff; display: flex; flex-direction: column; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: #f6f6f6; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+        .dark body { background-color: #0a0510; color: #e9d5ff; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); padding: 2rem; border-radius: 4px; }
         
-        .status-pulse {
-            width: 7px; height: 7px; border-radius: 50%;
-            display: inline-block; box-shadow: 0 0 8px currentColor;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .stealth-control { opacity: 0.2; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
+        .stat-card { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); padding: 1.5rem; border-radius: 4px; }
+        .dark .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); }
+        
+        .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; color: inherit; }
         .stealth-control:hover { opacity: 1; color: #8b5cf6; }
-        .stealth-control:active { transform: scale(0.8); }
-
-        #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; transition: opacity 0.4s ease-in-out !important; opacity: 1; }
-        .page-content { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease-out, transform 0.5s ease-out !important; flex: 1; }
+        
+        #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 1; }
+        .page-content { opacity: 0; transform: translateY(10px); flex: 1; display: flex; flex-direction: column; }
         .page-content.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
-<body class="antialiased text-[13px] dark:bg-[#0a0510]">
-
+<body class="antialiased text-[13px]">
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
-
+    
     <div id="main-wrapper" class="page-content">
-        <nav class="relative flex justify-between items-center px-6 h-24 sticky top-0 bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-purple-900/10">
-            <div class="flex items-center gap-6">
+        <nav class="relative flex justify-between items-center px-6 h-24 border-b border-gray-200 dark:border-purple-900/10 backdrop-blur-md sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 z-50">
+            <div class="flex items-center gap-4">
                 <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
-                <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] font-medium">
-                    <a href="home.html" class="text-gray-400 hover:text-white">Index</a>
-                    <a href="#" class="text-white border-b border-purple-500">Dashboard</a>
+                <div class="flex gap-4 text-[10px] uppercase tracking-widest font-medium">
+                    <a href="home.html" class="text-gray-400 hover:text-black dark:hover:text-white">Index</a>
+                    <a href="#" class="text-black dark:text-white border-b border-black dark:border-purple-500">Dash</a>
                 </div>
-            </div>
-            
-            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden sm:flex items-center text-[10px] uppercase tracking-[0.25em] font-medium text-purple-400/90">
-                <span class="status-pulse bg-purple-500 mr-3"></span>
-                <span>System Online</span>
             </div>
 
             <div class="flex gap-2 items-center">
-                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl text-purple-300/60 transition-all active:scale-90">
+                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-lg text-gray-400 dark:text-purple-300/40 active:scale-90">
                     <span id="theme-icon"></span>
                 </button>
-                <button onclick="logout()" class="text-[10px] uppercase tracking-[0.2em] text-purple-300/40 font-medium hover:text-red-500 px-2">Quitter</button>
+                <button onclick="logout()" class="text-[10px] text-gray-400 hover:text-red-500 uppercase tracking-widest px-2">Logout</button>
             </div>
         </nav>
 
-        <main class="max-w-5xl mx-auto w-full mt-16 px-6 pb-32">
+        <main class="max-w-4xl mx-auto w-full mt-12 px-6 pb-40">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
                 <div class="stat-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <p class="text-[9px] uppercase tracking-widest text-gray-500">Balance</p>
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-[9px] uppercase tracking-widest text-gray-400">Balance</p>
                         <div class="flex">
                             <span onclick="updateValue('balance', -97)" class="stealth-control">−</span>
                             <span onclick="updateValue('balance', 97)" class="stealth-control">+</span>
                         </div>
                     </div>
-                    <div class="text-4xl font-light tracking-tighter text-white"><span id="balance-val">0</span>€</div>
+                    <div class="text-4xl font-light tracking-tighter dark:text-white text-black"><span id="balance-val">0</span>€</div>
                 </div>
-
                 <div class="stat-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <p class="text-[9px] uppercase tracking-widest text-gray-500">Net Profit</p>
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-[9px] uppercase tracking-widest text-gray-400">Net Profit</p>
                         <div class="flex">
                             <span onclick="updateValue('profit', -97)" class="stealth-control">−</span>
                             <span onclick="updateValue('profit', 97)" class="stealth-control">+</span>
                         </div>
                     </div>
-                    <div class="text-4xl font-light tracking-tighter text-white"><span id="profit-val">0</span>€</div>
+                    <div class="text-4xl font-light tracking-tighter dark:text-white text-black"><span id="profit-val">0</span>€</div>
                 </div>
             </div>
-            
-            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-8 px-2">Recent Operations</h3>
-            <div id="transaction-list" class="space-y-4 border-t border-purple-900/10 pt-4">
-                </div>
+
+            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-6">Recent Operations</h3>
+            <div id="transaction-list" class="space-y-4 border-t border-gray-200 dark:border-purple-900/10 pt-4"></div>
         </main>
 
-        <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#0a0510]/95 backdrop-blur-md border-t border-purple-900/10 z-50">
-            <div class="flex gap-4 font-medium flex-1"><span>© 2026 ALEX</span></div>
-            <div class="absolute left-1/2 -translate-x-1/2 italic tracking-[0.5em] font-light text-purple-400/80 text-[12px]">a / k</div>
-            <div class="flex-1 text-right"><span id="local-time" class="font-mono text-[11px] text-purple-300/80">--:--:--</span></div>
+        <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[9px] text-gray-400 bg-[#f6f6f6]/95 dark:bg-[#0a0510]/95 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
+            <div class="flex-1 font-mono uppercase tracking-widest">© 2026 ALEX</div>
+            <div class="absolute left-1/2 -translate-x-1/2 italic text-gray-400 dark:text-purple-400/50">PRIVATE ACCESS</div>
+            <div class="flex-1 text-right font-mono" id="local-time">--:--:--</div>
         </footer>
     </div>
 
     <script>
-        // Initialisation des données et de l'historique
-        let data = {
-            balance: parseInt(localStorage.getItem('alex_balance')) || 12540,
-            profit: parseInt(localStorage.getItem('alex_profit')) || 3200
-        };
+        let data = { balance: parseInt(localStorage.getItem('alex_balance')) || 12540, profit: parseInt(localStorage.getItem('alex_profit')) || 3200 };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
 
         function updateDisplay() {
@@ -119,62 +102,57 @@
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
             localStorage.setItem('alex_balance', data.balance);
             localStorage.setItem('alex_profit', data.profit);
-            renderTransactions();
-        }
-
-        function updateValue(type, amount) {
-            data[type] += amount;
-            
-            // Créer l'objet transaction
-            const newTx = {
-                time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}),
-                label: type === 'balance' ? 'Deposit' : 'Profit Adj',
-                amount: amount
-            };
-            
-            // Ajouter au début de l'historique et limiter à 20 items
-            transactions.unshift(newTx);
-            if(transactions.length > 20) transactions.pop();
-            
-            localStorage.setItem('alex_transactions', JSON.stringify(transactions));
-            updateDisplay();
-        }
-
-        function renderTransactions() {
-            const list = document.getElementById('transaction-list');
-            list.innerHTML = ''; // Nettoyer pour rafraîchir
-            
+            const list = document.getElementById('transaction-list'); 
+            list.innerHTML = '';
             transactions.forEach(tx => {
-                const div = document.createElement('div');
-                div.className = "flex justify-between py-4 border-b border-purple-900/5 hover:bg-white/5 px-4 transition-all";
+                const div = document.createElement('div'); 
+                div.className = "flex justify-between py-4 border-b border-gray-100 dark:border-purple-900/5 px-2";
                 div.innerHTML = `
-                    <span class="text-gray-500 font-mono text-[11px]">${tx.time}</span>
-                    <span class="uppercase tracking-widest text-[11px]">${tx.label}</span>
-                    <span class="${tx.amount > 0 ? 'text-green-400' : 'text-red-400'} font-mono">${tx.amount > 0 ? '+' : ''}${tx.amount}.00€</span>
+                    <span class="text-gray-400 font-mono text-[10px]">${tx.time}</span>
+                    <span class="uppercase tracking-widest text-[10px]">${tx.label}</span>
+                    <span class="${tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-mono">${tx.amount > 0 ? '+' : ''}${tx.amount}€</span>
                 `;
                 list.appendChild(div);
             });
         }
 
-        function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
-
-        window.onload = () => {
-            const isDark = document.documentElement.classList.contains('dark');
-            document.getElementById('theme-icon').innerHTML = isDark ? '&#9790;' : '&#9728;';
+        function updateValue(type, amount) {
+            data[type] += amount;
+            transactions.unshift({ 
+                time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
+                label: type === 'balance' ? 'System Adj' : 'Profit Adj', 
+                amount: amount 
+            });
+            if(transactions.length > 20) transactions.pop();
+            localStorage.setItem('alex_transactions', JSON.stringify(transactions));
             updateDisplay();
-            updateClock();
-            setInterval(updateClock, 1000);
-            setTimeout(() => {
-                document.getElementById('transition-layer').style.opacity = "0";
-                document.getElementById('main-wrapper').classList.add('visible');
-            }, 50);
-        };
-
-        function toggleDarkMode() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('theme-icon').innerHTML = isDark ? '&#9790;' : '&#9728;';
         }
+
+        function updateThemeIcon() { 
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('theme-icon').innerHTML = isDark ? '&#9790;' : '&#9728;'; 
+        }
+
+        function toggleDarkMode() { 
+            const isDark = document.documentElement.classList.toggle('dark'); 
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+            updateThemeIcon(); 
+        }
+
+        function updateClock() { 
+            document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); 
+        }
+
+        window.onload = () => { 
+            updateDisplay(); 
+            updateClock(); 
+            updateThemeIcon();
+            setInterval(updateClock, 1000); 
+            setTimeout(() => { 
+                document.getElementById('transition-layer').style.opacity = "0"; 
+                document.getElementById('main-wrapper').classList.add('visible'); 
+            }, 50); 
+        };
 
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
     </script>
