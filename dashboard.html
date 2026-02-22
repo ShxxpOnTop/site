@@ -192,13 +192,13 @@
 
                 // DÉLAI DE 5 SECONDES
                 // DÉLAI DE 5 SECONDES
-        setTimeout(() => {
-            // 1. Création d'une instance unique pour ce clic
+setTimeout(() => {
+            // 1. Création d'une instance unique (Multi-son OK)
             const instanceAudio = new Audio('shopify.m4a');
-            instanceAudio.play().catch(e => console.log("Audio bloqué"));
+            instanceAudio.play().catch(e => console.log("Audio bloqué, cliquez sur la page"));
 
-            // 2. Vibration Nothing Phone
-            if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
+            // 2. Vibration immédiate du navigateur
+            if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
 
             // 3. Notification Système style "Shopify"
             if (Notification.permission === "granted") {
@@ -207,14 +207,17 @@
                         body: `[ALEX VAULT] You have a new order for 1 item totaling ${amountCaptured}.00€ from Online Store.`,
                         icon: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
                         badge: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
-                        tag: 'sale-' + Date.now(), // ID unique pour empiler les notifs
+                        tag: 'sale-' + Date.now(),
                         renotify: true,
-                        silent: false
+                        silent: false,
+                        vibrate: [200, 100, 200], 
+                        requireInteraction: true,
+                        // Paramètres pour forcer l'affichage sur Android
+                        data: { priority: 'high' } 
                     });
                 });
             }
         }, 5000);
-
             } else {
                 notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
             }
