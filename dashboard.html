@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr" id="html-tag" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function applyTheme() {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'light') { document.documentElement.classList.remove('dark'); }
+            else { document.documentElement.classList.add('dark'); }
+        }
+        applyTheme();
+        if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { transition: all 0.3s ease !important; }
+        body { font-family: 'Inter', sans-serif; background-color: #0a0510; color: #e9d5ff; }
+        .logo-minimal { font-family: 'Playfair Display', serif; }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            padding: 2rem;
+            border-radius: 4px;
+            position: relative;
+        }
+        .stat-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-money {
+            padding: 4px 12px;
+            border-radius: 2px;
+            font-family: monospace;
+            font-size: 14px;
+            transition: all 0.2s !important;
+        }
+        
+        #transition-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999;
+            transition: opacity 0.4s ease-in-out !important; opacity: 1;
+        }
+
+        /* Animation flash lors du changement de prix */
+        .price-update { animation: flash 0.5s ease-out; }
+        @keyframes flash {
+            0% { color: #8b5cf6; transform: scale(1.05); }
+            100% { color: white; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="antialiased text-[13px] dark:bg-[#0a0510]">
+
+    <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
+
+    <div class="min-h-screen flex flex-col">
+        <nav class="flex justify-between items-center px-6 h-24 border-b border-purple-900/10 backdrop-blur-md">
+            <div class="flex items-center gap-8">
+                <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
+                <div class="flex gap-6 text-[10px] uppercase tracking-[0.2em] font-medium">
+                    <a href="home.html" class="text-gray-400 hover:text-white transition-colors">Index</a>
+                    <a href="#" class="text-white border-b border-purple-500">Dashboard</a>
+                </div>
+            </div>
+            <button onclick="logout()" class="text-[10px] uppercase tracking-[0.2em] text-purple-300/40 hover:text-red-500">Quitter</button>
+        </nav>
+
+        <main class="max-w-5xl mx-auto w-full mt-20 px-6">
+            <header class="mb-16">
+                <h2 class="text-[10px] uppercase tracking-[0.4em] text-purple-500 mb-2">Financial Overview</h2>
+                <h1 class="text-3xl font-light italic logo-minimal">Revenue & Assets</h1>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="stat-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <p class="text-[9px] uppercase tracking-widest text-gray-500">Total Balance</p>
+                        <div class="flex gap-2">
+                            <button onclick="updateMoney(-100)" class="btn-money bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white">- 100</button>
+                            <button onclick="updateMoney(100)" class="btn-money bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white">+ 100</button>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-light tracking-tighter text-white" id="price-display">
+                        <span id="balance">0</span>€
+                    </div>
+                    <p class="text-gray-500 text-[10px] mt-4 font-mono italic">Gestion manuelle activée</p>
+                </div>
+
+                <div class="stat-card">
+                    <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-4">Net Profit (Monthly)</p>
+                    <div class="text-4xl font-light tracking-tighter text-white">
+                        <span>3,200</span>€
+                    </div>
+                    <div class="w-full bg-purple-900/20 h-[2px] mt-6 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-purple-500 w-[65%]"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-4">Crypto Assets</p>
+                    <div class="text-4xl font-light tracking-tighter text-white">
+                        0.42 <span class="text-sm text-purple-400 font-mono">ETH</span>
+                    </div>
+                    <p class="text-gray-500 text-[10px] mt-4 italic">≈ 1,240.32€</p>
+                </div>
+            </div>
+
+            <div class="mt-20">
+                <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-8">Recent Operations</h3>
+                <div id="transaction-list" class="space-y-4 border-t border-purple-900/10">
+                    <div class="flex justify-between py-4 border-b border-purple-900/5 hover:bg-white/5 px-2 transition-all">
+                        <span class="text-gray-400 font-mono">22.02.26</span>
+                        <span class="uppercase tracking-widest">Initial Deposit</span>
+                        <span class="text-green-400">+12,540.00€</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialisation du montant (récupère la sauvegarde ou met 12540 par défaut)
+        let currentBalance = parseInt(localStorage.getItem('my_balance')) || 12540;
+
+        function updateDisplay() {
+            const display = document.getElementById('balance');
+            const container = document.getElementById('price-display');
+            
+            display.innerText = currentBalance.toLocaleString();
+            
+            // Petit effet de flash
+            container.classList.remove('price-update');
+            void container.offsetWidth; 
+            container.classList.add('price-update');
+            
+            // Sauvegarde
+            localStorage.setItem('my_balance', currentBalance);
+        }
+
+        function updateMoney(amount) {
+            currentBalance += amount;
+            if(currentBalance < 0) currentBalance = 0; // Pas de découvert !
+            updateDisplay();
+            addTransaction(amount);
+        }
+
+        function addTransaction(amount) {
+            const list = document.getElementById('transaction-list');
+            const now = new Date();
+            const dateStr = `${now.getDate().toString().padStart(2, '0')}.${(now.getMonth()+1).toString().padStart(2, '0')}.${now.getFullYear().toString().slice(-2)}`;
+            
+            const div = document.createElement('div');
+            div.className = "flex justify-between py-4 border-b border-purple-900/5 hover:bg-white/5 px-2 transition-all animate-pulse";
+            div.innerHTML = `
+                <span class="text-gray-400 font-mono">${dateStr}</span>
+                <span class="uppercase tracking-widest">Manual Adjustment</span>
+                <span class="${amount > 0 ? 'text-green-400' : 'text-red-400'}">${amount > 0 ? '+' : ''}${amount}.00€</span>
+            `;
+            list.prepend(div);
+        }
+
+        window.onload = () => {
+            setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 50);
+            updateDisplay();
+        };
+
+        function logout() {
+            document.getElementById('transition-layer').style.opacity = "1";
+            localStorage.removeItem('access_granted');
+            setTimeout(() => { window.location.replace("index.html"); }, 400);
+        }
+    </script>
+</body>
+</html>
