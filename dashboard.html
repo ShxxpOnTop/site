@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Alex | Dash</title>
+    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/512/8b5cf6/security-configuration.png">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function applyTheme() {
             const currentTheme = localStorage.getItem('theme') || 'dark';
-            if (currentTheme === 'light') { document.documentElement.classList.remove('dark'); }
-            else { document.documentElement.classList.add('dark'); }
+            document.documentElement.classList.toggle('dark', currentTheme === 'dark');
         }
         applyTheme();
         if (localStorage.getItem('access_granted') !== 'true') { window.location.replace("index.html"); }
@@ -22,24 +23,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
         * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important; }
-        body { font-family: 'Inter', sans-serif; background-color: #f6f6f6; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
-        .dark body { background-color: #0a0510; color: #e9d5ff; }
+        body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        
         .stat-card { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); padding: 1.5rem; border-radius: 4px; }
         .dark .stat-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 92, 246, 0.1); }
-        
-        .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; color: inherit; }
+        .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
         .stealth-control:hover { opacity: 1; color: #8b5cf6; }
-        
         #transition-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 1; }
         .page-content { opacity: 0; transform: translateY(10px); flex: 1; display: flex; flex-direction: column; }
         .page-content.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
-<body class="antialiased text-[13px]">
+<body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
-    
     <div id="main-wrapper" class="page-content">
         <nav class="relative flex justify-between items-center px-6 h-24 border-b border-gray-200 dark:border-purple-900/10 backdrop-blur-md sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 z-50">
             <div class="flex items-center gap-4">
@@ -49,111 +45,60 @@
                     <a href="#" class="text-black dark:text-white border-b border-black dark:border-purple-500">Dash</a>
                 </div>
             </div>
-
             <div class="flex gap-2 items-center">
-                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-lg text-gray-400 dark:text-purple-300/40 active:scale-90">
-                    <span id="theme-icon"></span>
-                </button>
+                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-lg text-gray-400 dark:text-purple-300/40 active:scale-90"><span id="theme-icon"></span></button>
                 <button onclick="logout()" class="text-[10px] text-gray-400 hover:text-red-500 uppercase tracking-widest px-2">Logout</button>
             </div>
         </nav>
-
         <main class="max-w-4xl mx-auto w-full mt-12 px-6 pb-40">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
                 <div class="stat-card">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-[9px] uppercase tracking-widest text-gray-400">Balance</p>
-                        <div class="flex">
-                            <span onclick="updateValue('balance', -97)" class="stealth-control">−</span>
-                            <span onclick="updateValue('balance', 97)" class="stealth-control">+</span>
-                        </div>
+                    <div class="flex justify-between items-start mb-2"><p class="text-[9px] uppercase tracking-widest text-gray-400">Balance</p>
+                        <div class="flex"><span onclick="updateValue('balance', -97)" class="stealth-control">−</span><span onclick="updateValue('balance', 97)" class="stealth-control">+</span></div>
                     </div>
                     <div class="text-4xl font-light tracking-tighter dark:text-white text-black"><span id="balance-val">0</span>€</div>
                 </div>
                 <div class="stat-card">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-[9px] uppercase tracking-widest text-gray-400">Net Profit</p>
-                        <div class="flex">
-                            <span onclick="updateValue('profit', -97)" class="stealth-control">−</span>
-                            <span onclick="updateValue('profit', 97)" class="stealth-control">+</span>
-                        </div>
+                    <div class="flex justify-between items-start mb-2"><p class="text-[9px] uppercase tracking-widest text-gray-400">Net Profit</p>
+                        <div class="flex"><span onclick="updateValue('profit', -97)" class="stealth-control">−</span><span onclick="updateValue('profit', 97)" class="stealth-control">+</span></div>
                     </div>
                     <div class="text-4xl font-light tracking-tighter dark:text-white text-black"><span id="profit-val">0</span>€</div>
                 </div>
             </div>
-
-            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-6">Recent Operations</h3>
+            <h3 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-6 px-2">Recent Operations</h3>
             <div id="transaction-list" class="space-y-4 border-t border-gray-200 dark:border-purple-900/10 pt-4"></div>
         </main>
-
         <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[9px] text-gray-400 bg-[#f6f6f6]/95 dark:bg-[#0a0510]/95 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
             <div class="flex-1 font-mono uppercase tracking-widest">© 2026 ALEX</div>
             <div class="absolute left-1/2 -translate-x-1/2 italic text-gray-400 dark:text-purple-400/50">PRIVATE ACCESS</div>
             <div class="flex-1 text-right font-mono" id="local-time">--:--:--</div>
         </footer>
     </div>
-
     <script>
         let data = { balance: parseInt(localStorage.getItem('alex_balance')) || 12540, profit: parseInt(localStorage.getItem('alex_profit')) || 3200 };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
-
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
-            localStorage.setItem('alex_balance', data.balance);
-            localStorage.setItem('alex_profit', data.profit);
-            const list = document.getElementById('transaction-list'); 
-            list.innerHTML = '';
+            localStorage.setItem('alex_balance', data.balance); localStorage.setItem('alex_profit', data.profit);
+            const list = document.getElementById('transaction-list'); list.innerHTML = '';
             transactions.forEach(tx => {
-                const div = document.createElement('div'); 
-                div.className = "flex justify-between py-4 border-b border-gray-100 dark:border-purple-900/5 px-2";
-                div.innerHTML = `
-                    <span class="text-gray-400 font-mono text-[10px]">${tx.time}</span>
-                    <span class="uppercase tracking-widest text-[10px]">${tx.label}</span>
-                    <span class="${tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-mono">${tx.amount > 0 ? '+' : ''}${tx.amount}€</span>
-                `;
+                const div = document.createElement('div'); div.className = "flex justify-between py-4 border-b border-gray-100 dark:border-purple-900/5 px-2";
+                div.innerHTML = `<span class="text-gray-400 font-mono text-[10px]">${tx.time}</span><span class="uppercase tracking-widest text-[10px]">${tx.label}</span><span class="${tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-mono">${tx.amount > 0 ? '+' : ''}${tx.amount}€</span>`;
                 list.appendChild(div);
             });
         }
-
         function updateValue(type, amount) {
             data[type] += amount;
-            transactions.unshift({ 
-                time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
-                label: type === 'balance' ? 'System Adj' : 'Profit Adj', 
-                amount: amount 
-            });
+            transactions.unshift({ time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), label: type === 'balance' ? 'System Adj' : 'Profit Adj', amount: amount });
             if(transactions.length > 20) transactions.pop();
             localStorage.setItem('alex_transactions', JSON.stringify(transactions));
             updateDisplay();
         }
-
-        function updateThemeIcon() { 
-            const isDark = document.documentElement.classList.contains('dark');
-            document.getElementById('theme-icon').innerHTML = isDark ? '&#9790;' : '&#9728;'; 
-        }
-
-        function toggleDarkMode() { 
-            const isDark = document.documentElement.classList.toggle('dark'); 
-            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
-            updateThemeIcon(); 
-        }
-
-        function updateClock() { 
-            document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); 
-        }
-
-        window.onload = () => { 
-            updateDisplay(); 
-            updateClock(); 
-            updateThemeIcon();
-            setInterval(updateClock, 1000); 
-            setTimeout(() => { 
-                document.getElementById('transition-layer').style.opacity = "0"; 
-                document.getElementById('main-wrapper').classList.add('visible'); 
-            }, 50); 
-        };
-
+        function updateThemeIcon() { document.getElementById('theme-icon').innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; }
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateThemeIcon(); }
+        function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
+        window.onload = () => { updateDisplay(); updateClock(); updateThemeIcon(); setInterval(updateClock, 1000); setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; document.getElementById('main-wrapper').classList.add('visible'); }, 50); };
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
     </script>
 </body>
