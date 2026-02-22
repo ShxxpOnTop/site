@@ -23,49 +23,57 @@
         #transition-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 9999;
-            transition: opacity 0.6s ease-in-out !important;
-            opacity: 1; /* Commence opaque */
+            transition: opacity 0.8s ease-in-out !important; opacity: 1;
         }
+
+        /* Animation fluide du contenu */
+        .page-content {
+            opacity: 0; transform: translateY(15px);
+            transition: opacity 1s ease-out, transform 1s ease-out !important;
+        }
+        .page-content.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
 
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
 
-    <nav class="flex justify-between items-center px-6 py-8 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
-        <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
-        <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium">
-            <button onclick="toggleDarkMode()" class="hover:text-black dark:hover:text-purple-300">
-                [ <span id="mode-text">Dark</span> ]
-            </button>
-            <button onclick="logout()" class="hover:text-red-500 uppercase">Quitter</button>
-        </div>
-    </nav>
+    <div id="main-wrapper" class="page-content">
+        <nav class="flex justify-between items-center px-6 py-8 sticky top-0 bg-[#f6f6f6]/80 dark:bg-[#0a0510]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-purple-900/10">
+            <div class="logo-minimal text-3xl font-normal dark:text-purple-400">Alex.</div>
+            <div class="flex gap-4 text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-purple-300/60 font-medium">
+                <button onclick="toggleDarkMode()" class="hover:text-black dark:hover:text-purple-300">[ <span id="mode-text">Dark</span> ]</button>
+                <button onclick="logout()" class="hover:text-red-500 uppercase">Quitter</button>
+            </div>
+        </nav>
 
-    <main class="max-w-4xl mx-auto mt-20 px-6">
-        <div class="flex flex-col gap-10">
-            <div class="flex flex-col md:flex-row gap-2 md:gap-0">
-                <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-medium">02.22.26</div>
-                <div class="flex-1 flex flex-col gap-1">
-                    <div class="py-1 px-2 group rounded-sm cursor-default">
-                        <span class="dark:text-purple-400 violet-glow group-hover:translate-x-1 inline-block transition-transform">Système de verrouillage activé.</span>
+        <main class="max-w-4xl mx-auto mt-20 px-6">
+            <div class="flex flex-col gap-10">
+                <div class="flex flex-col md:flex-row gap-2 md:gap-0">
+                    <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-medium">02.22.26</div>
+                    <div class="flex-1 flex flex-col gap-1">
+                        <div class="py-1 px-2 group rounded-sm cursor-default">
+                            <span class="dark:text-purple-400 violet-glow group-hover:translate-x-1 inline-block transition-transform">Système de verrouillage activé.</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/90 dark:bg-[#0a0510]/90 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
-        <div class="flex gap-4 font-medium flex-1"><span>© 2026 ALEX</span></div>
-        <div class="absolute-center italic tracking-[0.5em] font-light text-gray-500 dark:text-purple-400/80 text-[12px]">a/k</div>
-        <div class="flex-1 text-right">
-            <span id="local-time" class="font-mono tabular-nums tracking-tighter text-[11px] dark:text-purple-300/80">--:--:--</span>
-        </div>
-    </footer>
+        <footer class="fixed bottom-0 left-0 w-full flex items-center px-6 py-8 text-[10px] text-gray-400 bg-[#f6f6f6]/90 dark:bg-[#0a0510]/90 backdrop-blur-md border-t border-gray-200 dark:border-purple-900/10 z-50">
+            <div class="flex gap-4 font-medium flex-1"><span>© 2026 ALEX</span></div>
+            <div class="absolute-center italic tracking-[0.5em] font-light text-gray-500 dark:text-purple-400/80 text-[12px]">a/k</div>
+            <div class="flex-1 text-right"><span id="local-time" class="font-mono text-[11px] dark:text-purple-300/80">--:--:--</span></div>
+        </footer>
+    </div>
 
     <script>
-        // Au chargement, on retire le voile
-        window.onload = () => { setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; }, 100); };
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('transition-layer').style.opacity = "0";
+                document.getElementById('main-wrapper').classList.add('visible');
+            }, 100);
+        };
 
         function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
         setInterval(updateClock, 1000); updateClock();
@@ -78,8 +86,9 @@
 
         function logout() {
             document.getElementById('transition-layer').style.opacity = "1";
+            document.getElementById('main-wrapper').style.opacity = "0";
             localStorage.removeItem('access_granted');
-            setTimeout(() => { window.location.replace("index.html"); }, 500);
+            setTimeout(() => { window.location.replace("index.html"); }, 600);
         }
         document.getElementById('mode-text').textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
     </script>
