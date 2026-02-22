@@ -74,7 +74,7 @@
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
     
-    <audio id="cha-ching" src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3" preload="auto"></audio>
+    <audio id="cha-ching" src="shopify.m4a" preload="auto"></audio>
     
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
     
@@ -132,14 +132,14 @@
     <div id="notification-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <script>
-        // DONNÉES
+        // DONNÉES LOCALES
         let data = { 
             balance: parseInt(localStorage.getItem('alex_balance')) || 12540, 
             profit: parseInt(localStorage.getItem('alex_profit')) || 3200 
         };
         let transactions = JSON.parse(localStorage.getItem('alex_transactions')) || [];
 
-        // TOAST INTERNE
+        // SYSTÈME DE TOASTS INTERNES
         function notify(message) {
             const container = document.getElementById('notification-container');
             const toast = document.createElement('div');
@@ -153,7 +153,7 @@
             }, 3000);
         }
 
-        // MISE À JOUR AFFICHAGE
+        // MISE À JOUR DE L'AFFICHAGE
         function updateDisplay() {
             document.getElementById('balance-val').innerText = data.balance.toLocaleString();
             document.getElementById('profit-val').innerText = data.profit.toLocaleString();
@@ -167,7 +167,7 @@
             });
         }
 
-        // FONCTION UNIQUE UPDATEVALUE
+        // LOGIQUE DES BOUTONS + / -
         function updateValue(type, amount) {
             data[type] += amount;
             const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
@@ -178,25 +178,31 @@
                 amount: amount 
             });
             
+            if(transactions.length > 15) transactions.pop();
+            
             localStorage.setItem('alex_transactions', JSON.stringify(transactions));
             localStorage.setItem('alex_balance', data.balance); 
             localStorage.setItem('alex_profit', data.profit);
             updateDisplay();
 
+            // LOGIQUE SHOPIFY (SI PROFIT POSITIF)
             if (type === 'profit' && amount > 0) {
                 notify(`Processing order... (+${amount}€)`);
                 const amountCaptured = amount;
 
                 // DÉLAI DE 5 SECONDES
                 setTimeout(() => {
+                    // 1. Son Cha-ching original
                     const audio = document.getElementById('cha-ching');
                     if(audio) {
                         audio.currentTime = 0;
-                        audio.play().catch(() => {});
+                        audio.play().catch(e => console.log("Audio bloqué - Touchez l'écran"));
                     }
 
+                    // 2. Vibration Nothing Phone
                     if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
 
+                    // 3. Notification Système style "Shopify"
                     if (Notification.permission === "granted") {
                         navigator.serviceWorker.ready.then(reg => {
                             reg.showNotification('New Order', {
@@ -204,7 +210,8 @@
                                 icon: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
                                 badge: 'https://cdn-icons-png.flaticon.com/512/825/825561.png',
                                 tag: 'sale-' + Date.now(),
-                                renotify: true
+                                renotify: true,
+                                silent: false
                             });
                         });
                     }
@@ -215,6 +222,7 @@
             }
         }
 
+        // THEME & UTILS
         function toggleDarkMode() { 
             const isDark = document.documentElement.classList.toggle('dark'); 
             localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
@@ -240,8 +248,12 @@
             }, 50); 
         };
 
-        function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
+        function logout() { 
+            localStorage.removeItem('access_granted'); 
+            window.location.replace("index.html"); 
+        }
 
+        // SWIPE POUR RETOUR
         let touchstartX = 0;
         document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
         document.addEventListener('touchend', e => { 
