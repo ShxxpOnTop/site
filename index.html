@@ -1,29 +1,33 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accès Réservé</title>
+    <title>Alex | Accès</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
     <script>
-        // SCRIPT SKIP : Si on a déjà le badge d'accès, on part direct sur home.html
+        // SCRIPT ANTI-BOUCLE : Si le badge est présent, on saute direct au portfolio
         if (localStorage.getItem('access_granted') === 'true') {
-            window.location.href = "home.html";
+            window.location.replace("home.html");
         }
     </script>
+    <style>
+        body { background-color: #0a0510; font-family: sans-serif; }
+        .logo-minimal { font-family: 'Playfair Display', serif; }
+    </style>
 </head>
-<body class="bg-[#0a0510] text-[#e9d5ff] h-screen flex items-center justify-center font-sans">
+<body class="h-screen flex items-center justify-center text-[#e9d5ff] overflow-hidden">
 
-    <div class="text-center space-y-8 w-64 animate-pulse">
-        <h1 class="font-serif text-4xl italic tracking-tighter">Alex.</h1>
+    <div class="text-center space-y-8 w-64">
+        <h1 class="logo-minimal text-4xl italic tracking-tighter">Alex.</h1>
         
         <div class="space-y-4">
             <input type="password" id="password" placeholder="Code d'accès" 
                 class="w-full bg-transparent border-b border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 transition-colors text-sm">
             
             <button onclick="checkAccess()" 
-                class="text-[10px] uppercase tracking-[0.3em] text-purple-300/40 hover:text-purple-300 transition-colors">
+                class="text-[10px] uppercase tracking-[0.3em] text-purple-300/40 hover:text-purple-300 transition-colors cursor-pointer">
                 Entrer
             </button>
         </div>
@@ -34,15 +38,20 @@
     <script>
         function checkAccess() {
             const pass = document.getElementById('password').value;
-            // CHANGE LE CODE ICI (actuellement 1234)
+            // TON CODE ICI
             if(pass === '1234') {
-                localStorage.setItem('access_granted', 'true'); // Donne le badge d'accès
-                window.location.href = "home.html";
+                localStorage.setItem('access_granted', 'true');
+                window.location.replace("home.html");
             } else {
-                document.getElementById('error').classList.remove('hidden');
+                const err = document.getElementById('error');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 2000);
             }
         }
-        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
+        // Valider avec Entrée
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkAccess();
+        });
     </script>
 </body>
 </html>
