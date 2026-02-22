@@ -53,7 +53,7 @@
             <a href="mailto:ton@email.com" class="hover:text-black dark:hover:text-purple-300 transition-colors uppercase tracking-widest">Contact</a>
         </div>
 
-        <div class="absolute-center italic tracking-[0.5em] font-light text-gray-300 dark:text-purple-900/50 text-[12px]">a/k</div>
+        <div class="absolute-center italic tracking-[0.5em] font-light text-gray-500 dark:text-purple-400/80 text-[12px]">a/k</div>
 
         <div class="flex-1 text-right">
             <span id="local-time" class="font-mono tabular-nums tracking-tighter text-[11px] dark:text-purple-300/80">--:--:--</span>
@@ -83,7 +83,6 @@
             window.location.replace("index.html");
         }
 
-        // Init thème
         if (localStorage.getItem('theme') === 'dark') {
             document.getElementById('html-tag').classList.add('dark');
             document.getElementById('mode-text').textContent = 'Light';
