@@ -2,13 +2,20 @@
 <html lang="fr" class="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Réservé</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
-    <title>Accès Réservé</title>
+    <script>
+        // SCRIPT SKIP : Si on a déjà le badge d'accès, on part direct sur home.html
+        if (localStorage.getItem('access_granted') === 'true') {
+            window.location.href = "home.html";
+        }
+    </script>
 </head>
 <body class="bg-[#0a0510] text-[#e9d5ff] h-screen flex items-center justify-center font-sans">
 
-    <div class="text-center space-y-8 w-64">
+    <div class="text-center space-y-8 w-64 animate-pulse">
         <h1 class="font-serif text-4xl italic tracking-tighter">Alex.</h1>
         
         <div class="space-y-4">
@@ -27,17 +34,15 @@
     <script>
         function checkAccess() {
             const pass = document.getElementById('password').value;
-            // ICI : Change '1234' par ton mot de passe
-            if(pass === 'bobbytheshxxp') {
+            // CHANGE LE CODE ICI (actuellement 1234)
+            if(pass === '1234') {
+                localStorage.setItem('access_granted', 'true'); // Donne le badge d'accès
                 window.location.href = "home.html";
             } else {
                 document.getElementById('error').classList.remove('hidden');
             }
         }
-        // Permet de valider avec la touche Entrée
-        document.getElementById('password').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkAccess();
-        });
+        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
     </script>
 </body>
 </html>
