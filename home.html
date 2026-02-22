@@ -67,9 +67,10 @@
             </div>
 
             <div class="flex gap-5 items-center">
-                <button onclick="toggleDarkMode()" class="text-xl leading-none text-gray-500 dark:text-purple-300/60 font-medium hover:text-black dark:hover:text-purple-300 transition-transform active:scale-90">
-                    <span id="theme-icon"></span>
-                </button>
+                <button onclick="toggleDarkMode()" 
+    class="w-8 h-8 flex items-center justify-center text-xl leading-none text-gray-500 dark:text-purple-300/60 hover:text-black dark:hover:text-purple-300 transition-all active:scale-90">
+    <span id="theme-icon" style="display: block; line-height: 1;"></span>
+</button>
                 <button onclick="logout()" class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-purple-300/40 font-medium hover:text-red-500">Quitter</button>
             </div>
         </nav>
@@ -140,3 +141,4 @@
     </script>
 </body>
 </html>
+
