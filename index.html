@@ -15,15 +15,89 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     
     <script>
-        function applyTheme() {
-            const currentTheme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.classList.toggle('dark', currentTheme === 'dark');
-        }
-        applyTheme();
-        if (localStorage.getItem('access_granted') === 'true') { window.location.replace("home.html"); }
-        tailwind.config = { darkMode: 'class' }
-    </script>
+    // 1. Configuration & Thème (S'exécute immédiatement)
+    function applyTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.classList.toggle('dark', currentTheme === 'dark');
+    }
+    applyTheme();
+    
+    // Redirection si déjà connecté
+    if (localStorage.getItem('access_granted') === 'true') { 
+        window.location.replace("home.html"); 
+    }
+    
+    tailwind.config = { darkMode: 'class' };
 
+    // 2. Service Worker (Pour les notifs écran d'accueil)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW Registered'))
+                .catch(err => console.log('SW Failed', err));
+        });
+    }
+
+    // 3. Logique des Notifications Système
+    function requestNotificationPermission() {
+        if (!("Notification" in window)) return;
+        
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification('Alex Vault', {
+                        body: 'Système synchronisé avec l\'écran d\'accueil.',
+                        icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
+                        vibrate: [200, 100, 200]
+                    });
+                });
+            }
+        });
+    }
+
+    // 4. Fonctions d'interface
+    function updateThemeIcon() { 
+        const icon = document.getElementById('theme-icon');
+        if(icon) icon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;'; 
+    }
+
+    function notify(message) {
+        const container = document.getElementById('notification-container');
+        const toast = document.createElement('div');
+        toast.className = 'notification';
+        toast.innerText = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 3000);
+    }
+
+    // 5. Vérification accès + demande notif
+    function checkAccess() {
+        const pass = document.getElementById('password').value;
+        if(pass === '1234') {
+            // ON DEMANDE LA PERMISSION ICI
+            requestNotificationPermission();
+            
+            localStorage.setItem('access_granted', 'true');
+            notify("Access Granted");
+            setTimeout(() => window.location.replace("home.html"), 800);
+        } else {
+            notify("Access Denied");
+            document.getElementById('password').value = '';
+        }
+    }
+
+    window.onload = () => { 
+        updateThemeIcon(); 
+        setTimeout(() => { 
+            const layer = document.getElementById('transition-layer');
+            if(layer) layer.style.opacity = "0"; 
+        }, 50); 
+    };
+</script>
     <style>
         /* Optimisation GPU */
         * { 
