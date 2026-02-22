@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex | Portfolio</title>
+    <title>Alex | PS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function applyTheme() {
@@ -80,8 +80,19 @@
 
         <main class="max-w-4xl mx-auto mt-24 px-6 flex-grow w-full pb-32">
             <div class="flex flex-col gap-16">
+                
                 <div class="flex flex-col md:flex-row gap-4 md:gap-0">
                     <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">02.22.26 —</div>
+                    <div class="flex-1">
+                        <div class="py-1 px-2 group rounded-sm cursor-default hover:bg-black/5 dark:hover:bg-purple-900/10 transition-all">
+                            <span class="block font-medium dark:text-purple-200 text-sm mb-1 uppercase tracking-tight">Personal Portfolio V1</span>
+                            <span class="text-gray-500 dark:text-purple-300/40 text-[11px] leading-relaxed italic uppercase tracking-wider">Déploiement de l'interface et système d'accès sécurisé</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 md:gap-0">
+                    <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">02.20.26 —</div>
                     <div class="flex-1">
                         <div class="py-1 px-2 group rounded-sm cursor-default hover:bg-black/5 dark:hover:bg-purple-900/10 transition-all">
                             <span class="block font-medium dark:text-purple-200 text-sm mb-1 uppercase tracking-tight">Creative Direction</span>
@@ -89,6 +100,17 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="flex flex-col md:flex-row gap-4 md:gap-0">
+                    <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">01.12.26 —</div>
+                    <div class="flex-1">
+                        <div class="py-1 px-2 group rounded-sm cursor-default hover:bg-black/5 dark:hover:bg-purple-900/10 transition-all">
+                            <span class="block font-medium dark:text-purple-200 text-sm mb-1 uppercase tracking-tight">Experimental Lab</span>
+                            <span class="text-gray-500 dark:text-purple-300/40 text-[11px] leading-relaxed italic uppercase tracking-wider">Prototyping minimal interfaces</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
 
@@ -100,6 +122,7 @@
     </div>
 
     <script>
+        // Met à jour l'icône
         function updateThemeIcon(animate = false) {
             const themeIcon = document.getElementById('theme-icon');
             if (animate) {
@@ -114,6 +137,7 @@
             }
         }
 
+        // Chargement de la page
         window.onload = () => {
             updateThemeIcon(false);
             setTimeout(() => {
@@ -122,15 +146,18 @@
             }, 50);
         };
 
+        // Horloge
         function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
         setInterval(updateClock, 1000); updateClock();
 
+        // Mode Sombre
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon(true);
         }
 
+        // Déconnexion
         function logout() {
             document.getElementById('transition-layer').style.opacity = "1";
             document.getElementById('main-wrapper').style.opacity = "0";
