@@ -12,7 +12,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
-        * { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, backdrop-filter 0.5s ease !important; }
+        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease !important; }
         body { font-family: 'Inter', sans-serif; }
         .logo-minimal { font-family: 'Playfair Display', serif; letter-spacing: -0.05em; }
         .date-col { min-width: 100px; font-variant-numeric: tabular-nums; }
@@ -23,13 +23,12 @@
         #transition-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 9999;
-            transition: opacity 0.8s ease-in-out !important; opacity: 1;
+            transition: opacity 0.4s ease-in-out !important; opacity: 1;
         }
 
-        /* Animation fluide du contenu */
         .page-content {
-            opacity: 0; transform: translateY(15px);
-            transition: opacity 1s ease-out, transform 1s ease-out !important;
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out !important;
         }
         .page-content.visible { opacity: 1; transform: translateY(0); }
     </style>
@@ -72,7 +71,7 @@
             setTimeout(() => {
                 document.getElementById('transition-layer').style.opacity = "0";
                 document.getElementById('main-wrapper').classList.add('visible');
-            }, 100);
+            }, 50);
         };
 
         function updateClock() { document.getElementById('local-time').textContent = new Date().toLocaleTimeString('fr-FR', { hour12: false }); }
@@ -88,7 +87,7 @@
             document.getElementById('transition-layer').style.opacity = "1";
             document.getElementById('main-wrapper').style.opacity = "0";
             localStorage.removeItem('access_granted');
-            setTimeout(() => { window.location.replace("index.html"); }, 600);
+            setTimeout(() => { window.location.replace("index.html"); }, 400);
         }
         document.getElementById('mode-text').textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
     </script>
