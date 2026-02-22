@@ -21,10 +21,11 @@
         body { font-family: 'Inter', sans-serif; overflow: hidden; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
         
-        .theme-rotate { animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        /* Rotation complète 360 pour finir dans le bon sens */
+        .theme-rotate { animation: rotate-icon 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes rotate-icon {
             0% { transform: rotate(0deg); opacity: 0.5; }
-            100% { transform: rotate(180deg); opacity: 1; }
+            100% { transform: rotate(360deg); opacity: 1; }
         }
 
         #transition-layer {
@@ -39,7 +40,7 @@
         }
         .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     </style>
-</head>
+ head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
 
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
@@ -70,9 +71,10 @@
                 themeIcon.classList.remove('theme-rotate');
                 void themeIcon.offsetWidth; 
                 themeIcon.classList.add('theme-rotate');
+                // Switch à mi-parcours (0.25s sur 0.5s)
                 setTimeout(() => {
                     themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
-                }, 200);
+                }, 250);
             } else {
                 themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
             }
