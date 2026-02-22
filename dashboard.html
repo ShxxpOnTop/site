@@ -34,7 +34,6 @@
 
         #main-wrapper { will-change: transform, opacity; backface-visibility: hidden; transform: translateZ(0); }
 
-        /* Animation d'entrée (Glisse vers la droite pour revenir) */
         .slide-in-right { 
             transform: translateX(100%) translateZ(0) !important; 
             opacity: 0 !important; 
@@ -46,7 +45,6 @@
         .stealth-control { opacity: 0.1; cursor: pointer; font-size: 18px; padding: 0 10px; user-select: none; }
         .stealth-control:hover { opacity: 1; color: #8b5cf6; }
 
-        /* STYLE DES NOTIFICATIONS */
         .notification {
             background: rgba(10, 5, 16, 0.9);
             backdrop-filter: blur(10px);
@@ -77,6 +75,7 @@
 </head>
 <body class="antialiased text-[13px] bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
     <audio id="cha-ching" src="https://www.soundjay.com/misc/sounds/cash-register-05.mp3" preload="auto"></audio>
+    
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
     
     <div id="main-wrapper" class="flex flex-col min-h-screen transition-all duration-500">
@@ -168,6 +167,7 @@
         function updateValue(type, amount) {
             data[type] += amount;
             const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
+            
             transactions.unshift({ 
                 time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
                 label: labelText, 
@@ -180,7 +180,34 @@
             localStorage.setItem('alex_profit', data.profit);
             
             updateDisplay();
-            notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
+
+            // EFFET SHOPIFY
+            if (type === 'profit' && amount > 0) {
+                // Son
+                const audio = document.getElementById('cha-ching');
+                audio.currentTime = 0;
+                audio.play();
+
+                // Notification interne
+                notify(`💰 SALE: +${amount}€ !`);
+
+                // Vibration Nothing Phone
+                if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
+
+                // Notification Écran d'accueil
+                if (Notification.permission === "granted") {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification('New Sale! 💸', {
+                            body: `+${amount}€ added to profit. Total: ${data.profit}€`,
+                            icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
+                            vibrate: [100, 30, 100],
+                            badge: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png'
+                        });
+                    });
+                }
+            } else {
+                notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
+            }
         }
 
         function toggleDarkMode() { 
@@ -204,7 +231,6 @@
 
         function logout() { localStorage.removeItem('access_granted'); window.location.replace("index.html"); }
 
-        // Swipe Logic (Right swipe to go back home)
         let touchstartX = 0; let touchendX = 0;
         document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
         document.addEventListener('touchend', e => { 
