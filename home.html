@@ -35,10 +35,11 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        .theme-rotate { animation: rotate-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        /* Tour complet 360 pour garder l'icône droite */
+        .theme-rotate { animation: rotate-icon 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes rotate-icon {
             0% { transform: rotate(0deg); opacity: 0.5; }
-            100% { transform: rotate(180deg); opacity: 1; }
+            100% { transform: rotate(360deg); opacity: 1; }
         }
 
         #transition-layer {
@@ -87,15 +88,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col md:flex-row gap-4 md:gap-0">
-                    <div class="date-col text-gray-400 dark:text-purple-500/50 pt-1 font-mono text-[11px] tracking-tighter italic">01.12.26 —</div>
-                    <div class="flex-1">
-                        <div class="py-1 px-2 group rounded-sm cursor-default hover:bg-black/5 dark:hover:bg-purple-900/10 transition-all">
-                            <span class="block font-medium dark:text-purple-200 text-sm mb-1 uppercase tracking-tight">Experimental Lab</span>
-                            <span class="text-gray-500 dark:text-purple-300/40 text-[11px] leading-relaxed italic uppercase tracking-wider">Prototyping minimal interfaces</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
 
@@ -115,7 +107,7 @@
                 themeIcon.classList.add('theme-rotate');
                 setTimeout(() => {
                     themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
-                }, 200);
+                }, 250);
             } else {
                 themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
             }
