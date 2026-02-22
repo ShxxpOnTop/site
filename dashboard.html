@@ -153,68 +153,61 @@
             });
         }
 
-        // NOTIFICATIONS INTERNES (TOASTS)
-        function notify(message) {
-            const container = document.getElementById('notification-container');
-            const toast = document.createElement('div');
-            toast.className = 'notification';
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
-        }
+function updateValue(type, amount) {
+    data[type] += amount;
+    const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
+    
+    // 1. Mise à jour immédiate de l'interface (Visuel)
+    transactions.unshift({ 
+        time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
+        label: labelText, 
+        amount: amount 
+    });
+    
+    localStorage.setItem('alex_transactions', JSON.stringify(transactions));
+    localStorage.setItem('alex_balance', data.balance); 
+    localStorage.setItem('alex_profit', data.profit);
+    updateDisplay();
 
-        // FONCTION UPDATE (AVEC DÉLAI 10S POUR SHOPIFY)
-        function updateValue(type, amount) {
-            data[type] += amount;
-            const labelText = type === 'balance' ? 'System Adj' : 'Profit Adj';
-            
-            transactions.unshift({ 
-                time: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}), 
-                label: labelText, 
-                amount: amount 
-            });
-            if(transactions.length > 15) transactions.pop();
-            
-            localStorage.setItem('alex_transactions', JSON.stringify(transactions));
-            localStorage.setItem('alex_balance', data.balance); 
-            localStorage.setItem('alex_profit', data.profit);
-            
-            updateDisplay();
+    // 2. Logique avec délai de 5 secondes pour le Profit
+    if (type === 'profit' && amount > 0) {
+        // Feedback immédiat dans l'application
+        notify(`Processing Sale... (+${amount}€)`);
 
-            if (type === 'profit' && amount > 0) {
-                // Feedback immédiat dans l'appli
-                notify(`Processing Sale... (+${amount}€)`);
+        // Capture des données pour la notification future
+        const amountCaptured = amount;
+        const totalCaptured = data.profit;
 
-                // On capture les valeurs pour les 10s de délai
-                const capturedAmount = amount;
-                const capturedTotal = data.profit;
+        setTimeout(() => {
+            // A. Son "Cha-ching"
+            const audio = document.getElementById('cha-ching');
+            if(audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Audio en attente d'interaction"));
+            }
 
-                setTimeout(() => {
-                    // 1. Son Cha-ching
-                    const audio = document.getElementById('cha-ching');
-                    if(audio) { audio.currentTime = 0; audio.play().catch(()=>{}); }
+            // B. Vibration (Nothing Phone)
+            if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
 
-                    // 2. Vibration (Nothing Phone)
-                    if ("vibrate" in navigator) navigator.vibrate([100, 30, 100]);
+            // C. Notification Système (Écran d'accueil)
+            if (Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification('New Sale! 💸', {
+                        body: `Success: +${amountCaptured}€\nTotal Profit: ${totalCaptured}€`,
+                        icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
+                        badge: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
+                        tag: 'sale-' + Date.now(),
+                        renotify: true
+                    });
+                });
+            }
+        }, 5000); // 5000 millisecondes = 5 secondes
 
-                    // 3. Notification Système (Cumulable)
-                    if (Notification.permission === "granted") {
-                        navigator.serviceWorker.ready.then(reg => {
-                            reg.showNotification('New Sale! 💸', {
-                                body: `Received: +${capturedAmount}€\nTotal Profit: ${capturedTotal}€`,
-                                icon: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
-                                badge: 'https://img.icons8.com/ios-filled/512/8b5cf6/flash-on.png',
-                                vibrate: [100, 30, 100],
-                                tag: 'sale-' + Date.now(), // Tag unique pour empiler les notifs
-                                renotify: true
-                            });
-                        });
-                    }
-                }, 10000); // Délai de 10 secondes
+    } else {
+        // Notification simple et immédiate pour les autres actions
+        notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
+    }
+}
 
             } else {
                 notify(`${labelText}: ${amount > 0 ? '+' : ''}${amount}€`);
