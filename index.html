@@ -17,96 +17,36 @@
         tailwind.config = { darkMode: 'class' }
     </script>
     <style>
-        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important; }
+        * { transition: background-color 0.3s ease, color 0.3s ease !important; }
         body { font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
         .logo-minimal { font-family: 'Playfair Display', serif; }
-        
-        .theme-rotate { animation: switch-icon 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes switch-icon {
-            0% { transform: rotate(0deg) scale(1); opacity: 1; }
-            50% { transform: rotate(90deg) scale(0.5); opacity: 0; }
-            51% { transform: rotate(-90deg) scale(0.5); opacity: 0; }
-            100% { transform: rotate(0deg) scale(1); opacity: 1; }
-        }
-
-        #transition-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 9999;
-            transition: opacity 0.4s ease-in-out !important; opacity: 1;
-        }
-
-        .fade-in-up {
-            opacity: 0; transform: translateY(8px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out !important;
-        }
+        #transition-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; transition: opacity 0.4s ease-in-out !important; opacity: 1; }
+        .fade-in-up { opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease-out, transform 0.5s ease-out !important; }
         .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center bg-[#f6f6f6] text-[#333] dark:bg-[#0a0510] dark:text-[#e9d5ff]">
-
     <div id="transition-layer" class="bg-[#f6f6f6] dark:bg-[#0a0510]"></div>
-
-    <nav class="fixed top-0 right-0 p-8">
-        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center text-xl leading-none text-gray-500 dark:text-purple-300/60 hover:text-black dark:hover:text-purple-300 transition-all active:scale-90 outline-none">
-            <span id="theme-icon" class="block pointer-events-none"></span>
-        </button>
-    </nav>
-
     <div id="main-content" class="fade-in-up text-center space-y-8 w-64">
         <h1 class="logo-minimal text-4xl italic tracking-tighter dark:text-purple-400">Alex.</h1>
         <div class="space-y-4">
-            <input type="password" id="password" placeholder="Code d'accès" 
-                class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400/50 dark:placeholder:text-purple-300/20">
-            <button onclick="checkAccess()" 
-                class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer block mx-auto">
-                Entrer
-            </button>
+            <input type="password" id="password" placeholder="Code d'accès" class="w-full bg-transparent border-b border-gray-300 dark:border-purple-900/50 py-2 outline-none text-center focus:border-purple-500 text-sm placeholder:text-gray-400/50 dark:placeholder:text-purple-300/20">
+            <button onclick="checkAccess()" class="text-[10px] uppercase tracking-[0.3em] text-gray-400 dark:text-purple-300/40 hover:text-black dark:hover:text-purple-300 cursor-pointer block mx-auto">Entrer</button>
         </div>
         <p id="error" class="text-red-500 text-[10px] hidden uppercase tracking-widest">Code incorrect</p>
     </div>
-
     <script>
-        function updateThemeIcon(animate = false) {
-            const themeIcon = document.getElementById('theme-icon');
-            if (animate) {
-                themeIcon.classList.remove('theme-rotate');
-                void themeIcon.offsetWidth; 
-                themeIcon.classList.add('theme-rotate');
-                setTimeout(() => {
-                    themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
-                }, 200);
-            } else {
-                themeIcon.innerHTML = document.documentElement.classList.contains('dark') ? '&#9790;' : '&#9728;';
-            }
-        }
-
-        window.onload = () => {
-            updateThemeIcon(false);
-            setTimeout(() => {
-                document.getElementById('transition-layer').style.opacity = "0";
-                document.getElementById('main-content').classList.add('visible');
-            }, 50);
-        };
-
+        window.onload = () => { setTimeout(() => { document.getElementById('transition-layer').style.opacity = "0"; document.getElementById('main-content').classList.add('visible'); }, 50); };
         async function checkAccess() {
-            if(document.getElementById('password').value === 'BobbyfishGoat11') {
+            if(document.getElementById('password').value === '1234') {
                 document.getElementById('transition-layer').style.opacity = "1";
-                document.getElementById('main-content').style.opacity = "0";
                 localStorage.setItem('access_granted', 'true');
                 setTimeout(() => { window.location.replace("home.html"); }, 400);
             } else {
-                const err = document.getElementById('error');
-                err.classList.remove('hidden');
+                const err = document.getElementById('error'); err.classList.remove('hidden');
                 setTimeout(() => err.classList.add('hidden'), 2000);
             }
         }
-
-        function toggleDarkMode() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateThemeIcon(true);
-        }
-
         document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAccess(); });
     </script>
 </body>
